@@ -1,0 +1,55 @@
+<div class="container mt-3">
+    <div class="row">
+      <div class="col-xl-12">
+        <div class="card">
+          <div class="card-body">
+            <div class="d-flex flex-wrap">
+              <h5 class="font-size-16 me-3">Files</h5>
+              <div class="ms-auto">
+                <button class="btn btn-primary" type="button" (click)="openUploadModel()">
+                  <i class="bi bi-plus"></i>Create New
+                </button>
+              </div>
+            </div>
+            <hr class="mt-2">
+            <div class="table-responsive">
+              <table class="table align-middle table-nowrap table-hover mb-0">
+                <thead class="table-light">
+                  <tr>
+                    <th scope="col">Name</th>
+                    <th scope="col">Date modified</th>
+                    <th scope="col">Size</th>
+                    <th scope="col" colspan="2">addedBy</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr *ngIf="(pdfs$ | async)?.length === 0">
+                    <td colspan="5" style="text-align: center">No PDFs found</td>
+                  </tr>
+                  <tr *ngFor="let pdf of pdfs$ | async">
+                    <td (click)="NavigateTo(pdf.id)"><i class="text-primary me-2"></i>{{ pdf.titre }}</td>
+                    <td>{{ formatDate(pdf.dateHistory[0]) }}</td>
+                    <td>{{transform(pdf.size)}}</td>
+                    <td>{{ pdf.userHistory[0].firstName }} {{ pdf.userHistory[0].lastName }}</td>
+                    <td class="overflow-hidden">
+                        <div ngbDropdown container="body">
+                            <button type="button" class="btn btn-outline-secondary btn-sm" ngbDropdownToggle>Actions</button>
+                            <div ngbDropdownMenu>
+                                <button ngbDropdownItem>Edit</button>
+                                <div class="dropdown-divider"></div>
+                                <button ngbDropdownItem (click)="openDeleteModel(pdf)">Delete</button>
+                            </div>
+                        </div>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <app-pdf-upload></app-pdf-upload>
+  <app-pdf-delete></app-pdf-delete>

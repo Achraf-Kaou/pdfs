@@ -1,0 +1,5 @@
+backend/.mvn
+backend/.settings
+backend/.vscode
+frontend/.angular
+frontend/.vscode

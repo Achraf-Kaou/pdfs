@@ -1,0 +1,30 @@
+<div class="container">
+	<table class="table table-striped">
+		<thead>
+		<tr>
+			<th scope="col" sortable="id">#</th>
+			<th scope="col" sortable="name">Name</th>
+			<th scope="col" sortable="email">Email</th>
+			<th scope="col" sortable="role">Role</th>
+			<th scope="col" sortable="permission">Permissions</th>
+			<th scope="col">Actions</th>
+		</tr>
+		</thead>
+		<tbody>
+		<tr *ngFor="let user of users | async; let i = index">
+			<th scope="row">{{i+1}}</th>
+			<td>{{ user.firstName }} {{user.lastName }}</td>
+			<td>{{ user.email }}</td>
+			<td>{{ user.role }}</td>
+			<td>{{ user.permission }}</td>
+			<td>
+			<button class="btn btn-outline-success btn-sm" (click)="openModalEdit(user)">Edit</button>
+			<button class="btn btn-outline-danger btn-sm mx-3" (click)="openModalDelete(user)">Delete</button>
+			</td>
+		</tr>
+		</tbody>
+	</table>
+</div>
+
+<edit-user></edit-user>
+<delete-user></delete-user>

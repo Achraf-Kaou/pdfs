@@ -1,0 +1,59 @@
+<ng-template #content let-modal>
+  <div class="modal-header">
+    <h4 class="modal-title" id="modal-basic-title">Upload file</h4>
+    <button type="button" class="btn-close" aria-label="Close" (click)="modal.dismiss('Cross click')"></button>
+  </div>
+  <div class="modal-body">
+    <form [formGroup]="uploadForm" (ngSubmit)="onFormSubmit()">
+      <div class="form-group my-2">
+        <label for="titre">Title:</label>
+        <input type="text" class="form-control" id="titre" formControlName="titre" />
+        <div *ngIf="uploadForm.get('titre')?.touched && uploadForm.get('titre')?.invalid" class="text-danger">
+          Title is required
+        </div>
+      </div>
+      <div class="form-group my-2">
+        <label for="description">Description:</label>
+        <textarea class="form-control" id="description" formControlName="description"></textarea>
+      </div>
+      <div class="form-group my-2">
+        <label for="pdfFile">Select a PDF file:</label>
+        <div class="input-group">
+          <input type="file" class="form-control" id="pdf" (change)="onFileSelected($event)" accept="application/pdf" />
+          <label class="input-group-text" for="pdfFile">Choose file</label>
+        </div>
+        <div *ngIf="uploadForm.get('pdf')?.touched && uploadForm.get('pdf')?.invalid" class="text-danger">
+          PDF file is required
+        </div>
+        <div *ngIf="uploadForm.get('pdf')" class="progress my-3">
+          <div
+            class="progress-bar progress-bar-info progress-bar-striped"
+            role="progressbar"
+            attr.aria-valuenow="{{ progress }}"
+            aria-valuemin="0"
+            aria-valuemax="100"
+            [ngStyle]="{ width: progress + '%' }"
+          >
+            {{ progress }}%
+          </div>
+        </div>
+        
+        <div *ngIf="message" class="alert alert-danger" role="alert">{{ message }}</div>
+      </div>
+      <hr>
+      <div class="text-end">
+        <button type="submit" class="btn btn-secondary btn-block ">Upload</button>
+      </div>
+    </form>
+  </div>
+</ng-template>
+
+  @if (Message) {
+    <div class="container fixed-top mt-2">
+      <div class="row justify-content-center">
+        <div class="col-md-6">
+          <ngb-alert #selfClosingAlert class=" text-center" type="success" (closed)="Message = ''"> {{ Message }} </ngb-alert>
+          </div>
+        </div>
+      </div>
+  }

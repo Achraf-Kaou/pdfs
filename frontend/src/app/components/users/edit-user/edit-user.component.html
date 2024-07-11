@@ -1,0 +1,103 @@
+@if (successMessage) {
+  <div class="container fixed-top mt-2">
+    <div class="row justify-content-center">
+      <div class="col-md-6">
+	      <ngb-alert #selfClosingAlert class=" text-center" type="success" (closed)="successMessage = ''">{{ successMessage }}</ngb-alert>
+      </div>
+    </div>
+  </div>
+}
+<ng-template #content let-modal>
+    <div class="modal-header">
+      <h4 class="modal-title" id="modal-basic-title">Edit user {{ user.firstName }} {{ user.lastName }}</h4>
+      <button type="button" class="btn-close" aria-label="Close" (click)="modal.dismiss('Cross click')"></button>
+    </div>
+    <div class="modal-body">
+      <form [formGroup]="editUserForm">
+        <div class="row mb-3">
+          <div class="col">
+            <label for="firstName" class="form-label">First Name</label>
+            <input type="text" class="form-control" id="firstName" placeholder="Enter first name" formControlName="firstName" required>
+            <div *ngIf="firstName && firstName.invalid && (firstName.dirty || firstName.touched)"
+            class="text-danger">
+            <div *ngIf="firstName && firstName.hasError('required')" >
+              firstName is required.
+            </div>
+          </div>
+          </div>
+          
+          <div class="col">
+            <label for="lastName" class="form-label">Last Name</label>
+            <input type="text" class="form-control" id="lastName" placeholder="Enter last name" formControlName="lastName">
+            <div *ngIf="lastName && lastName.invalid && (lastName.dirty || lastName.touched)"
+            class="text-danger">
+            <div *ngIf="lastName && lastName.hasError('required')" >
+              lastName is required.
+            </div>
+          </div>
+          </div>
+        </div>
+        <div class="mb-3">
+          <label for="email" class="form-label">Email</label>
+          <input type="email" class="form-control" id="email" placeholder="Enter email" formControlName="email">
+          <div *ngIf="email && email.invalid && (email.dirty || email.touched)"
+            class="text-danger">
+            <div *ngIf="email && email.hasError('required')" >
+              Email is required.
+            </div>
+            <div *ngIf="email && email.hasError('email')" >
+              Invalid email address.
+            </div>
+          </div>
+        </div>
+        <div class="row mb-3">
+          <div class="col-10">
+            <label for="password" class="form-label">Password</label>
+            <input [type]="showPassword ? 'text' : 'password'" class="form-control" id="password" formControlName="password">
+            <div *ngIf="password && password.invalid && (password.dirty || password.touched)"
+                class="text-danger">
+              <div *ngIf="password && password.hasError('required')" >
+               Password is required.
+              </div>
+              <div *ngIf="password && password.hasError('minlength')" >
+               Password must be at least 8 characters long.
+              </div>
+            </div>
+          </div>
+          <div class="col-1 mt-2">
+            <label for="" class="form-label"> </label><br>
+            <button class="btn btn-outline-secondary" (click)="togglePassword()">show</button>
+          </div>
+        </div>
+        <div class="mb-3">
+          <label for="role" class="form-label">Role</label>
+          <select class="form-select" id="role" formControlName="role">
+            <option value="">Choose role</option>
+            <option value="Admin">Admin</option>
+            <option value="User">User</option>
+          </select>
+          <div *ngIf="role && role.invalid && (role.dirty || role.touched)"
+            class="text-danger">
+            <div *ngIf="role && role.hasError('required')" >
+              role is required.
+            </div>
+          </div>
+        </div>
+        <div *ngIf="role && role.value === 'User'" class="row mb-3">
+          <label class="form-label">Permissions</label>
+          <div formArrayName="permission" class="d-flex">
+            <div class="col form-check mx-2 d-flex align-items-center">
+              <input class="form-check-input" type="checkbox" id="permissionRead" formControlName="0">
+              <label class="form-check-label" for="permissionRead">Read</label>
+            </div>
+            <div class="col form-check mx-2 d-flex align-items-center">
+              <input class="form-check-input" type="checkbox" id="permissionWrite" formControlName="1">
+              <label class="form-check-label" for="permissionWrite">Write</label>
+            </div>
+          </div>
+        </div>
+        <button type="submit" class="btn btn-outline-secondary" (click)="onSubmit(modal)">Submit</button>
+      </form>
+    </div>
+  </ng-template>
+  

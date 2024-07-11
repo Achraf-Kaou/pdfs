@@ -1,0 +1,15 @@
+<app-nav-bar></app-nav-bar>
+<div class="container">
+	<div class="row m-3">
+	  <div class="col">
+		<input type="text" class="form-control" placeholder="Filter users" [formControl]="filter" />
+	  </div>
+	  <div class="col-auto">
+		<button class="btn btn-secondary" (click)="openModalAdd()">Add User</button>
+	  </div>
+	</div>
+    <user-list [users]="users$"></user-list>
+</div>
+<add-user></add-user>
+
+  
