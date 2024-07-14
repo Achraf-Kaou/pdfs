@@ -40,7 +40,7 @@
                           <button ngbDropdownItem (click)="openDeleteModel(pdf)">Delete</button>
                         </div>
                         <ng-template #viewOnly>
-                          <button type="button" class="btn btn-outline-secondary btn-sm">View</button>
+                          <button type="button" class="btn btn-outline-secondary btn-sm" (click)="navigateToPdf(pdf.id)">View</button>
                         </ng-template>
                       </div>                      
                     </td>

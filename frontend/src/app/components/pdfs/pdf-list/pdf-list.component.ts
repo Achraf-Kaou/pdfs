@@ -48,6 +48,10 @@ export class PdfListComponent implements OnInit{
     this.router.navigate(['/pdf', id]);
   }
 
+  navigateToPdf(id: string | undefined) {
+    this.router.navigate(['/view', id]);
+  }
+
   formatDate(date: Date | string): string {
     if (typeof date === 'string') {
       date = new Date(date);

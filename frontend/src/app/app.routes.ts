@@ -8,6 +8,7 @@ import { PdfListComponent } from './components/pdfs/pdf-list/pdf-list.component'
 import { HomeComponent } from './pages/home/home.component';
 import { PdfComponent } from './pages/pdf/pdf.component';
 import { MypdfsPage } from './pages/mypdfs/mypdfs.component';
+import { ViewComponent } from './pages/view/view.component';
 
 export const routes: Routes = [
     { path: '', component: LoginComponent },
@@ -19,6 +20,8 @@ export const routes: Routes = [
     { path: 'home', component: HomeComponent },
     { path: 'pdf/:id', component: PdfComponent },
     { path: 'mypfds', component: MypdfsPage },
+    { path: 'view/:id', component: ViewComponent },
+    
 /*     { path: '**', redirectTo: '/unauthorized' },
  */    
 

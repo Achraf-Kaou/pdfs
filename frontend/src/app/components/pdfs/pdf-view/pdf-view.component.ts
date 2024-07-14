@@ -1,8 +1,5 @@
-import { Component, ElementRef, Input, OnInit, ViewChild } from '@angular/core';
-import { NgxExtendedPdfViewerComponent, NgxExtendedPdfViewerModule } from 'ngx-extended-pdf-viewer';
-import { PdfDocument } from '../../../models/Pdf';
-import { PdfService } from '../../../services/Pdf.service';
-import { ActivatedRoute } from '@angular/router';
+import { Component, Input, OnInit } from '@angular/core';
+import { NgxExtendedPdfViewerModule } from 'ngx-extended-pdf-viewer';
 import { DomSanitizer } from '@angular/platform-browser';
 
 
