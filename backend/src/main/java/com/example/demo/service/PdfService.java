@@ -19,9 +19,9 @@ public class PdfService {
     @Autowired
     private PdfRepository pdfRepository;
 
-    public PdfDocument savePdf(MultipartFile file, String description, Date date, User user) throws IOException {
+    public PdfDocument savePdf(String titre, MultipartFile file, String description, Date date, User user) throws IOException {
         PdfDocument pdfDocument = new PdfDocument();
-        pdfDocument.setTitre(file.getOriginalFilename());
+        pdfDocument.setTitre(titre);
         pdfDocument.setDescription(description);
         pdfDocument.setDateHistory(date);
         pdfDocument.setUserHistory(user);
@@ -53,6 +53,19 @@ public class PdfService {
             return Optional.of(pdfRepository.save(document));
         }
         return Optional.empty();
+    }
+
+    public List<PdfDocument> getPdfsFiltered(String titre) {
+        System.out.println(titre);
+        if (titre.endsWith(".pdf")) {
+            titre = titre.substring(0, titre.length() - 4); // Remove ".pdf"
+            System.out.println("Hello, World!");
+        }
+        return pdfRepository.findByTitreContainingIgnoreCase(titre);
+    }
+
+    public List<PdfDocument> getPdfsByUserId(String userId) {
+        return pdfRepository.findByUserId(userId);
     }
 }
 

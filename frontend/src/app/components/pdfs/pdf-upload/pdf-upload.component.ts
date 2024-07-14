@@ -79,6 +79,7 @@ export class PdfUploadComponent implements OnInit {
     this.progress = 0;
 
     const formData: FormData = new FormData();
+    formData.append('titre', this.uploadForm.get('titre')?.value);
     formData.append('file', this.selectedFile as Blob, this.selectedFile?.name || '');
     formData.append('description', this.uploadForm.get('description')?.value);
     const userData = localStorage.getItem('user');

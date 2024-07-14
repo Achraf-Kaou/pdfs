@@ -15,21 +15,5 @@ export class AppComponent {
   
   constructor(private router: Router, private userService: UserService) {}
 
-  ngOnInit(): void {
-    const userData = localStorage.getItem('user');
-    if (userData !== null) {
-      this.user = JSON.parse(userData);
-    }
-
-
-    if (this.user) {
-      this.userService.login(this.user.email, this.user.password).subscribe((exists) => {
-        if (exists) {
-          this.router.navigate(['/home']);
-        } else {
-          this.router.navigate(['/unauthorized']);
-        }
-      });
-    }
-  }
+  ngOnInit(): void {}
 }

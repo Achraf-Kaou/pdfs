@@ -8,6 +8,7 @@ import { PdfDocument } from '../models/Pdf';
   providedIn: 'root'
 })
 export class PdfService {
+  
 
   private uploadUrl = 'http://localhost:8080/api/pdf';
 
@@ -40,5 +41,16 @@ export class PdfService {
         'Content-Type': 'application/json'
       })
     })
+  }
+
+  getPdfsFiltered(filterValue: string): Observable<PdfDocument[]> {
+    if (!filterValue) {
+      return this.getPdfs();
+    }
+    return this.http.get<PdfDocument[]>(`${this.uploadUrl}/filtered?titre=${filterValue}`);
+  }
+
+  getPdfsByUserId(userId: string): Observable<PdfDocument[]> {
+    return this.http.get<PdfDocument[]>(`${this.uploadUrl}/pdfs/byUser?userId=${userId}`);
   }
 }

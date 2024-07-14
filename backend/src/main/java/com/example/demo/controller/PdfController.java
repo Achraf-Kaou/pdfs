@@ -32,12 +32,13 @@ public class PdfController {
     public ResponseEntity<PdfDocument> uploadPdf(
             @RequestParam("file") MultipartFile file,
             @RequestParam("description") String description,
-            @RequestParam("user") String userId) {
+            @RequestParam("user") String userId,
+            @RequestParam("titre") String titre) {
         try {
             Optional<User> userOptional = userRepository.findById(userId);
             if (userOptional.isPresent()) {
                 User user = userOptional.get();
-                PdfDocument savedPdf = pdfService.savePdf(file, description, new Date(), user);
+                PdfDocument savedPdf = pdfService.savePdf(titre, file, description, new Date(), user);
                 return ResponseEntity.ok(savedPdf);
             } else {
                 return ResponseEntity.status(404).body(null); // User not found
@@ -83,5 +84,15 @@ public class PdfController {
         } catch (IOException e) {
             return ResponseEntity.status(500).build();
         }
+    }
+
+    @GetMapping("/filtered")
+    public List<PdfDocument> getPdfsFiltered(@RequestParam String titre) {
+        return pdfService.getPdfsFiltered(titre);
+    }
+
+    @GetMapping("/pdfs/byUser")
+    public List<PdfDocument> getPdfsByUserId(@RequestParam String userId) {
+        return pdfService.getPdfsByUserId(userId);
     }
 }

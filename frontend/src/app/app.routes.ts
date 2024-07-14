@@ -4,11 +4,10 @@ import { LoginComponent } from './pages/login/login.component';
 import { UnauthorizedComponent } from './pages/unauthorized/unauthorized.component';
 import { AdminComponent } from './pages/admin/admin.component';
 import { PdfUploadComponent } from './components/pdfs/pdf-upload/pdf-upload.component';
-import { NavBarComponent } from './components/nav-bar/nav-bar.component';
 import { PdfListComponent } from './components/pdfs/pdf-list/pdf-list.component';
 import { HomeComponent } from './pages/home/home.component';
-import { PdfViewComponent } from './components/pdfs/pdf-view/pdf-view.component';
 import { PdfComponent } from './pages/pdf/pdf.component';
+import { MypdfsPage } from './pages/mypdfs/mypdfs.component';
 
 export const routes: Routes = [
     { path: '', component: LoginComponent },
@@ -19,6 +18,9 @@ export const routes: Routes = [
     { path: 'pdfList', component: PdfListComponent },
     { path: 'home', component: HomeComponent },
     { path: 'pdf/:id', component: PdfComponent },
-    { path: '**', redirectTo: '/unauthorized' }
+    { path: 'mypfds', component: MypdfsPage },
+/*     { path: '**', redirectTo: '/unauthorized' },
+ */    
+
 
 ];

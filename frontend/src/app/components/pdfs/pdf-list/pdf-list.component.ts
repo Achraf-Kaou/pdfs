@@ -7,6 +7,7 @@ import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { PdfUploadComponent } from "../pdf-upload/pdf-upload.component";
 import { PdfDeleteComponent } from "../pdf-delete/pdf-delete.component";
+import { User } from '../../../models/User';
 
 
 @Component({
@@ -17,17 +18,30 @@ import { PdfDeleteComponent } from "../pdf-delete/pdf-delete.component";
     imports: [NgbDropdownModule, CommonModule, PdfUploadComponent, PdfDeleteComponent]
 })
 export class PdfListComponent implements OnInit{
-  pdfs$!: Observable<PdfDocument[]>;
+
   @ViewChild(PdfUploadComponent) pdfUploadComponent!: PdfUploadComponent;
   @ViewChild(PdfDeleteComponent) pdfDeleteComponent!: PdfDeleteComponent;
-
+  @Input() pdfs: Observable<PdfDocument[]> | null = null;
   selectedPdf: PdfDocument | null = null;
+  role: String | null = null;
+  userId: object | undefined;
+
 
   
   constructor(private pdfService: PdfService, private router: Router){}
 
   ngOnInit(): void {
-    this.pdfs$ = this.pdfService.getPdfs();
+    const userData = localStorage.getItem('user');
+      if (userData !== null) {
+        const user: User = JSON.parse(userData);
+        if (user && user.role) {
+          this.role = user.role;
+          this.userId = user.id;
+        }
+      }
+  }
+  canEditOrDelete(pdf : PdfDocument): boolean {
+    return this.role === 'Admin' || (pdf.userHistory && pdf.userHistory.length > 0 && pdf.userHistory[0].id === this.userId);
   }
 
   NavigateTo(id: string | undefined): void {

@@ -2,11 +2,12 @@ import { Component, ViewChild } from '@angular/core';
 import { Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import { NgbAlert, NgbAlertModule } from '@ng-bootstrap/ng-bootstrap';
 import { Subject, debounceTime, tap } from 'rxjs';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { UserService } from '../../services/user.service';
+import { User } from '../../models/User';
 
 @Component({
   standalone: true,
@@ -17,6 +18,7 @@ import { UserService } from '../../services/user.service';
 export class LoginComponent {
   loginForm!: FormGroup;
   showPassword!: boolean;
+  user!: User;
   @ViewChild('selfClosingAlert', { static: false }) selfClosingAlert: NgbAlert | undefined;
   private _message$ = new Subject<string>();
   error = '';
@@ -54,7 +56,7 @@ export class LoginComponent {
           localStorage.setItem('user', JSON.stringify(response));
           this.router.navigateByUrl('/admin');  
         }else {
-          this.router.navigateByUrl('/unauthorized');  
+          this.router.navigateByUrl('/home');  
         }
       },
       (error: any) => {

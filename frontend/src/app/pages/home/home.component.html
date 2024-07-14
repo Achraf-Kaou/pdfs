@@ -1,2 +1,2 @@
-<app-nav-bar></app-nav-bar>
-<app-pdf-list></app-pdf-list>
+<app-nav-bar (searchValueChange)="onSearchValueChange($event)" ></app-nav-bar>
+<app-pdf-list [pdfs]="pdfs$"></app-pdf-list>
