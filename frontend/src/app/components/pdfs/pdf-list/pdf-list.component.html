@@ -27,18 +27,25 @@
                     <td colspan="5" style="text-align: center">No PDFs found</td>
                   </tr>
                   <tr *ngFor="let pdf of pdfs | async">
-                    <td (click)="NavigateTo(pdf.id)"><i class="text-primary me-2"></i>{{ pdf.titre }}</td>
+                    <td ><i class="text-primary me-2"></i>{{ pdf.titre }}</td>
                     <td>{{ formatDate(pdf.dateHistory[0]) }}</td>
                     <td>{{transform(pdf.size)}}</td>
                     <td>{{ pdf.userHistory[0].firstName }} {{ pdf.userHistory[0].lastName }}</td>
                     <td class="overflow-hidden">
                       <div ngbDropdown container="body">
-                        <button type="button" class="btn btn-outline-secondary btn-sm" *ngIf="canEditOrDelete(pdf); else viewOnly" ngbDropdownToggle>Actions</button>
-                        <div ngbDropdownMenu *ngIf="canEditOrDelete(pdf)">
-                          <button ngbDropdownItem>Edit</button>
-                          <div class="dropdown-divider"></div>
-                          <button ngbDropdownItem (click)="openDeleteModel(pdf)">Delete</button>
-                        </div>
+                        <ng-container *ngIf="canEditOrDelete(pdf); else viewOnly">
+                          <ng-container *ngIf="isOwner(pdf) || (canEdit(pdf) && canDelete(pdf)) ; else editOnly">
+                            <button type="button" class="btn btn-outline-secondary btn-sm" ngbDropdownToggle>Actions</button>
+                            <div ngbDropdownMenu>
+                              <button ngbDropdownItem (click)="navigateTo(pdf.id)">Edit</button>
+                              <div class="dropdown-divider"></div>
+                              <button ngbDropdownItem (click)="openDeleteModel(pdf)">Delete</button>
+                            </div>
+                          </ng-container>
+                          <ng-template #editOnly>
+                            <button type="button" class="btn btn-outline-secondary btn-sm" (click)="navigateTo(pdf.id)">Edit</button>
+                          </ng-template>
+                        </ng-container>
                         <ng-template #viewOnly>
                           <button type="button" class="btn btn-outline-secondary btn-sm" (click)="navigateToPdf(pdf.id)">View</button>
                         </ng-template>

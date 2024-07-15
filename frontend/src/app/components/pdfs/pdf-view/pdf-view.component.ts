@@ -1,7 +1,8 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { NgxExtendedPdfViewerModule } from 'ngx-extended-pdf-viewer';
 import { DomSanitizer } from '@angular/platform-browser';
-
+import { PDFDocument, rgb } from 'pdf-lib';
+import { PdfService } from '../../../services/Pdf.service';
 
 @Component({
   selector: 'app-pdf-view',
@@ -12,9 +13,9 @@ import { DomSanitizer } from '@angular/platform-browser';
 })
 export class PdfViewComponent implements OnInit {
   @Input() pdfSrc!: Uint8Array;
+  pdfDoc!: PDFDocument;
 
-  constructor(private sanitizer: DomSanitizer){}
+  constructor(private sanitizer: DomSanitizer, private pdfService: PdfService){}
 
   ngOnInit(): void {}
-  
 }

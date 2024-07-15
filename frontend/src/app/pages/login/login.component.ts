@@ -52,10 +52,10 @@ export class LoginComponent {
     .subscribe(
       (response: any) => {
         if(response.role==="Admin"){
-          console.log(response)
           localStorage.setItem('user', JSON.stringify(response));
           this.router.navigateByUrl('/admin');  
         }else {
+          localStorage.setItem('user', JSON.stringify(response));
           this.router.navigateByUrl('/home');  
         }
       },

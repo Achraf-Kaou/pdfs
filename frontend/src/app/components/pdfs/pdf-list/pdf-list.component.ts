@@ -25,6 +25,8 @@ export class PdfListComponent implements OnInit{
   selectedPdf: PdfDocument | null = null;
   role: String | null = null;
   userId: object | undefined;
+  permissions : Array<string> | null = null;
+  user : User | null = null;
 
 
   
@@ -37,14 +39,35 @@ export class PdfListComponent implements OnInit{
         if (user && user.role) {
           this.role = user.role;
           this.userId = user.id;
+          this.permissions = user.permission;
+          this.user = user;
         }
       }
   }
-  canEditOrDelete(pdf : PdfDocument): boolean {
+  canDelete(pdf: PdfDocument): boolean {
     return this.role === 'Admin' || (pdf.userHistory && pdf.userHistory.length > 0 && pdf.userHistory[0].id === this.userId);
   }
+  
+  canEdit(pdf: PdfDocument): boolean | null {
+    return this.role === 'Admin' || (this.permissions && this.permissions.includes("Write"));
+  }
+  
+  canEditOrDelete(pdf: PdfDocument): boolean {
+    return this.canEdit(pdf) || this.canDelete(pdf);
+  }
 
-  NavigateTo(id: string | undefined): void {
+  canEditAndDelete(pdf: PdfDocument): boolean | null {
+    return this.isOwner(pdf) || (this.canEdit(pdf) && this.canDelete(pdf)); 
+  }
+
+  isOwner(pdf: PdfDocument) : boolean | null {
+    const user: User = pdf.userHistory[0];
+    console.log(pdf.userHistory[0]===this.user)
+    console.log(this.user, pdf.userHistory[0])
+    return user.id===this.user?.id;
+  }
+
+  navigateTo(id: string | undefined): void {
     this.router.navigate(['/pdf', id]);
   }
 
