@@ -70,7 +70,7 @@ public class PdfController {
         @PathVariable String id, 
         @RequestParam("file") MultipartFile file,
         @RequestParam("user") String userId
-        ) {
+    ) {
         try {
             Optional<User> userOptional = userRepository.findById(userId);
             if (userOptional.isPresent()) {
@@ -78,9 +78,9 @@ public class PdfController {
                 Optional<PdfDocument> updatedDocument = pdfService.updatePdfDocument(id, file, new Date(), user);
                 return updatedDocument.map(ResponseEntity::ok)
                     .orElseGet(() -> ResponseEntity.notFound().build());
-                } else {
-                    return ResponseEntity.status(404).body(null); // User not found
-                }
+            } else {
+                return ResponseEntity.status(404).body(null); // User not found
+            }
         } catch (IOException e) {
             return ResponseEntity.status(500).build();
         }

@@ -1,2 +1,2 @@
-<app-nav-bar [pdfPageUrl]="true"></app-nav-bar>
-<app-pdf-view [pdfSrc]="pdfSrc"></app-pdf-view>
+<app-nav-bar [pdfPageUrl]="true" (saveEvent)="onSave()"></app-nav-bar>
+<app-pdf-view [pdfSrc]="pdfSrc" [idPdf]="id"></app-pdf-view>

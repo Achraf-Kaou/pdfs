@@ -24,7 +24,11 @@ export class NavBarComponent implements OnInit {
   role: string | null = null;
   @ViewChild(AddUserComponent) addUserComponent!: AddUserComponent;
   @ViewChild(PdfUploadComponent) pdfUploadComponent!: PdfUploadComponent;
+  @Output() saveEvent = new EventEmitter<void>();
 
+  onSave() {
+    this.saveEvent.emit();
+  }
 
   constructor(
     private router: Router,
@@ -70,10 +74,5 @@ export class NavBarComponent implements OnInit {
     this.router.navigateByUrl('/');
   }
 
-  save() {
-    
-  }
-
-  cancel() {}
 }
 

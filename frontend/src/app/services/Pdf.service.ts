@@ -28,10 +28,11 @@ export class PdfService {
     return this.http.get<PdfDocument>(`${this.uploadUrl}/${id}`);
   }
 
-  updatePdf(formData: FormData, id: string | undefined): Observable<any> {
-    const req = new HttpRequest('put', this.uploadUrl+`/${id}` , formData, {
+  updatePdf(formData: FormData, idPdf : string | null): Observable<any> {
+    const req = new HttpRequest('put', this.uploadUrl+`/${idPdf}`, formData, {
       reportProgress: true,
     });
+    console.log(req);
     return this.http.request(req);
   }
 

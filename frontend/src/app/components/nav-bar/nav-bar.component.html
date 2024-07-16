@@ -11,8 +11,8 @@
         <form class="d-flex" role="search" (ngSubmit)="onSearch()">
           <input class="form-control me-2" type="search" placeholder="Search a PDF" aria-label="Search" [formControl]="searchControl">
           <button class="btn btn-outline-success me-2" type="submit">Search</button>
-          <button class="btn btn-outline-primary ms-5" type="button" (click)="save()">save</button>
-          <button class="btn btn-outline-danger ms-2" type="button" (click)="cancel()">cancel</button>
+          <button class="btn btn-outline-primary ms-4" type="button" (click)="onSave()">save</button>
+          <button class="btn btn-outline-dark ms-3" type="button" (click)="logout()">logout</button>
         </form>
     </div>
     </div>
