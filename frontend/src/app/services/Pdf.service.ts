@@ -28,7 +28,7 @@ export class PdfService {
     return this.http.get<PdfDocument>(`${this.uploadUrl}/${id}`);
   }
 
-  updatePdf(formData: FormData, id: string | undefined): Observable<any> {
+  updatePdf(formData: FormData, id: string | null): Observable<any> {
     const req = new HttpRequest('put', this.uploadUrl+`/${id}` , formData, {
       reportProgress: true,
     });

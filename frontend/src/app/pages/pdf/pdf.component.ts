@@ -16,12 +16,13 @@ export class PdfComponent implements OnInit {
   pdf!: PdfDocument;
   pdfSrc!: Uint8Array;
   pdfViewer: any;
-
+  id!: string |null;
   constructor(private pdfService: PdfService, private route: ActivatedRoute ) {}
 
   ngOnInit(): void {
     const id = this.route.snapshot.paramMap.get('id');
     this.getPdfById(id);
+    this.id=id;
   }
 
   getPdfById(id: string | null): void {
