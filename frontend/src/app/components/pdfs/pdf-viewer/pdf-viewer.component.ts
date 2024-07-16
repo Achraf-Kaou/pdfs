@@ -1,19 +1,36 @@
-import { Component, CUSTOM_ELEMENTS_SCHEMA, Input, NO_ERRORS_SCHEMA } from '@angular/core';
-import { NgxExtendedPdfViewerModule } from 'ngx-extended-pdf-viewer';
+import { AfterViewInit, Component, Input, OnChanges, OnInit, SimpleChanges } from '@angular/core';
+import PSPDFKit from 'pspdfkit';
 
 @Component({
   selector: 'app-pdf-viewer',
   standalone: true,
-  imports: [NgxExtendedPdfViewerModule],
-  /* schemas: [CUSTOM_ELEMENTS_SCHEMA, NO_ERRORS_SCHEMA], */
+  imports: [],
   templateUrl: './pdf-viewer.component.html',
   styleUrl: './pdf-viewer.component.css'
 })
-export class PdfViewerComponent {
+export class PdfViewerComponent implements OnChanges {
   @Input() pdfSrc!: Uint8Array;
 
-  onAfterLoadComplete(pdf: any) {
-    pdf.annotationToolbar.setToolbarVisible(false);
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes['pdfSrc'] && this.pdfSrc) {
+      this.loadPdf();
+    }
   }
 
+  async loadPdf() {
+    try {
+      const arrayBuffer = this.pdfSrc.buffer; // Convert Uint8Array to ArrayBuffer
+      await PSPDFKit.load({
+        baseUrl: location.protocol + "//" + location.host + "/assets/",
+        document: arrayBuffer, // Use ArrayBuffer here
+        container: "#pspdfkit-container",
+      }).then(instance => {
+        instance.setViewState(viewState => viewState.set("readOnly", true));
+        instance.setViewState(viewState => viewState.set("sidebarMode", PSPDFKit.SidebarMode.THUMBNAILS));
+        (window as any).instance = instance;
+      });
+    } catch (error) {
+      console.error('Error loading PSPDFKit', error);
+    }
+  }
 }

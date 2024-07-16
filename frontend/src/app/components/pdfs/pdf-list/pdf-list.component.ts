@@ -62,8 +62,6 @@ export class PdfListComponent implements OnInit{
 
   isOwner(pdf: PdfDocument) : boolean | null {
     const user: User = pdf.userHistory[0];
-    console.log(pdf.userHistory[0]===this.user)
-    console.log(this.user, pdf.userHistory[0])
     return user.id===this.user?.id;
   }
 

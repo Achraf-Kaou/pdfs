@@ -1,22 +1,3 @@
-<ngx-extended-pdf-viewer 
-  [src]="pdfSrc"
-  [showSidebarButton]="true"
-  [showFindButton]="true"
-  [showPagingButtons]="true"
-  [showZoomButtons]="true"
-  [showPresentationModeButton]="true"
-  [showOpenFileButton]="false"
-  [showPrintButton]="false"
-  [showDownloadButton]="true"
-  [showSecondaryToolbarButton]="false"
-  [showRotateButton]="false"
-  [showHandToolButton]="false"
-  [showScrollingButton]="false"
-  [showSpreadButton]="false"
-  [showPropertiesButton]="false"
-  [showBorders]="true"
-  [height]="'100vh'"
-  [zoom]="100"
-  [textLayer]="false"
-  [contextMenuAllowed]="false"
-></ngx-extended-pdf-viewer>
+<div class="pdf-viewer">
+	<div id="pspdfkit-container" style="width: 100%; height: 100vh"></div>
+</div>

@@ -25,6 +25,11 @@
               "src/favicon.ico",
               "src/assets",
               {
+            		"glob": "**/*",
+                "input": "./node_modules/pspdfkit/dist/pspdfkit-lib/",
+                "output": "./assets/pspdfkit-lib/"
+              },
+              {
                 "glob": "**/*",
                 "input": "node_modules/ngx-extended-pdf-viewer/assets/",
                 "output": "/assets/"

@@ -32,6 +32,7 @@ export class PdfComponent implements OnInit {
           const base64PDF = pdf.data;
           const byteNumbers = Array.from(atob(base64PDF));
           this.pdfSrc = new Uint8Array(byteNumbers.map((byte) => byte.charCodeAt(0)));
+          console.log(this.pdfSrc)
         } else {
           console.error('Invalid or empty PDF data');
         }
