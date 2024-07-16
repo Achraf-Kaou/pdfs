@@ -20,7 +20,7 @@ import { HttpEventType, HttpResponse } from '@angular/common/http';
 export class PdfUploadComponent implements OnInit {
   @ViewChild('content') content!: TemplateRef<any>;
   pdfSrc: string | ArrayBuffer | null = null;
-  selectedFile: File | null = null;
+  selectedFile!: File;
   private _message$ = new Subject<string>();
   Message = '';
   @ViewChild('selfClosingAlert', { static: false }) selfClosingAlert: NgbAlert | undefined;
@@ -56,18 +56,46 @@ export class PdfUploadComponent implements OnInit {
   open(){
     this.modalService.open(this.content, { ariaLabelledBy: 'modal-basic-title' });
   }
+  isValidPdf(file: File): Promise<boolean> {
+    return new Promise((resolve, reject) => {
+      if (file.type !== 'application/pdf') {
+        resolve(false);
+        return;
+      }
+  
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        const arrayBuffer = event.target?.result as ArrayBuffer;
+        const uint8Array = new Uint8Array(arrayBuffer);
+        const header = String.fromCharCode(...uint8Array.slice(0, 5));
+        resolve(header === '%PDF-');
+      };
+      reader.onerror = (error) => reject(error);
+      reader.readAsArrayBuffer(file);
+    });
+  }
+  
+
   onFileSelected(event: any) {
     this.selectedFile = event.target.files[0];
 
     if (this.selectedFile) {
-      const reader = new FileReader();
-      reader.onload = () => {
-        this.pdfSrc = reader.result;
-        this.uploadForm.patchValue({
-          pdf: this.selectedFile
-        });
-      };
-      reader.readAsArrayBuffer(this.selectedFile);
+      this.isValidPdf(this.selectedFile).then((isValid) => {
+        if (isValid) {
+          const reader = new FileReader();
+          reader.onload = () => {
+            this.pdfSrc = reader.result;
+            this.uploadForm.patchValue({
+              pdf: this.selectedFile
+            });
+          };
+          reader.readAsArrayBuffer(this.selectedFile);
+        } else {
+          console.error('The selected file is not a valid PDF.');
+        }
+      }).catch((error) => {
+        console.error('Error validating PDF file:', error);
+      });
     }
   }
 
