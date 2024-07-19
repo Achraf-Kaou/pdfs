@@ -1,24 +1,48 @@
-import { Component, Input, OnChanges, OnInit, SimpleChanges } from '@angular/core';
+import { Component, Input, OnChanges, OnDestroy, OnInit, SimpleChanges, ViewChild } from '@angular/core';
 import { NgxExtendedPdfViewerModule, NgxExtendedPdfViewerService } from 'ngx-extended-pdf-viewer';
 import { DomSanitizer } from '@angular/platform-browser';
-import { PDFDocument, rgb } from 'pdf-lib';
+import { PDFDocument } from 'pdf-lib';
 import { PdfService } from '../../../services/Pdf.service';
 import { User } from '../../../models/User';
+import { BehaviorSubject, debounceTime, Subject, tap } from 'rxjs';
+import { NgbAlert, NgbAlertModule } from '@ng-bootstrap/ng-bootstrap';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 @Component({
   selector: 'app-pdf-view',
   standalone: true,
-  imports: [NgxExtendedPdfViewerModule],
+  imports: [NgxExtendedPdfViewerModule, NgbAlertModule],
   templateUrl: './pdf-view.component.html',
   styleUrl: './pdf-view.component.css'
 })
-export class PdfViewComponent implements OnInit, OnChanges {
+export class PdfViewComponent implements OnInit, OnDestroy {
   @Input() pdfSrc!: Uint8Array;
   pdfDoc!: PDFDocument;
   idUser!: string;
   @Input() idPdf!: string | null;
   pdfSource!: any;
-  constructor(private sanitizer: DomSanitizer, private pdfService: PdfService, private ngxService: NgxExtendedPdfViewerService){}
+
+  private _successMessage$ = new BehaviorSubject<string>('');
+  private _errorMessage$ = new BehaviorSubject<string>('');
+  successMessage: string | null = null;
+  errorMessage: string | null = null;
+  @ViewChild('selfClosingAlert', { static: false }) selfClosingAlert: NgbAlert | undefined;
+
+  constructor(private pdfService: PdfService, private ngxService: NgxExtendedPdfViewerService){
+    this._successMessage$
+      .pipe(
+        tap((message) => (this.successMessage = message)),
+        debounceTime(5000)
+      )
+      .subscribe(() => (this.successMessage = null));
+
+    this._errorMessage$
+      .pipe(
+        tap((message) => (this.errorMessage = message)),
+        debounceTime(5000)
+      )
+      .subscribe(() => (this.errorMessage = null));
+  }
 
   ngOnInit(): void {
     const userData = localStorage.getItem('user');
@@ -30,24 +54,12 @@ export class PdfViewComponent implements OnInit, OnChanges {
     }
   }
 
-  ngOnChanges(changes: SimpleChanges): void {
-    if (changes['pdfSrc'] && this.pdfSrc) {
-      console.log("oui")
-      const uint8Array = this.pdfSrc as Uint8Array;
-      this.pdfSource = new Blob([uint8Array], { type: 'application/pdf' });
-    }
+  ngOnDestroy() {
+    this._successMessage$.unsubscribe();
+    this._errorMessage$.unsubscribe();
   }
 
-  savePdf(modifiedPdf: Blob) {
-    const formData = new FormData();
-    formData.append('file', modifiedPdf);
-    formData.append('user', this.idUser);
-    this.pdfService.updatePdf(formData, this.idPdf).subscribe(response => {
-      console.log('PDF saved successfully', response);
-    });
-  }
-
-  exportPdf() {
+  savePdf() {
     this.ngxService.getCurrentDocumentAsBlob().then((blob: Blob | undefined) => {
       if (blob) {
         const formData = new FormData();
@@ -55,9 +67,13 @@ export class PdfViewComponent implements OnInit, OnChanges {
         formData.append('user', this.idUser);
 
         this.pdfService.updatePdf(formData, this.idPdf).subscribe(response => {
-          console.log('PDF saved successfully', response);
+          this._successMessage$.next(`file saved successfully`);
+        }),
+        ((error: any) => {
+          this._errorMessage$.next(`error saving file`);
+          console.log(error);
         })
-  
-          }} );   
-        }
+      }
+    });   
+  }
 }

@@ -1,7 +1,6 @@
 import { Component, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
 import { Router } from '@angular/router';
 import { PdfDocument } from '../../models/Pdf';
-import { PdfService } from '../../services/Pdf.service';
 import { CommonModule } from '@angular/common';
 import { User } from '../../models/User';
 import { debounceTime, distinctUntilChanged, Observable } from 'rxjs';
@@ -21,20 +20,28 @@ export class NavBarComponent implements OnInit {
   @Input() pdf!: PdfDocument | null;
   @Output() searchValueChange = new EventEmitter<string>();
   searchControl = new FormControl('');
-  role: string | null = null;
   @ViewChild(AddUserComponent) addUserComponent!: AddUserComponent;
   @ViewChild(PdfUploadComponent) pdfUploadComponent!: PdfUploadComponent;
+  @Output() saveEvent = new EventEmitter<void>();
+  user!: User;
 
-
-  constructor(
-    private router: Router,
-  ) {
+  constructor(private router: Router) {
     this.searchControl.valueChanges.pipe(
       debounceTime(300),
       distinctUntilChanged()
     ).subscribe((value: any) => {
       this.searchValueChange.emit(value);
     });
+  }
+
+  ngOnInit(): void {
+    const userData = localStorage.getItem('user');
+      if (userData !== null) {
+        const user: User = JSON.parse(userData);
+        if (user) {
+          this.user = user;
+        }
+      }
   }
 
   openModalAdd() {
@@ -51,15 +58,7 @@ export class NavBarComponent implements OnInit {
     this.router.navigate(['/home'], { queryParams: { search: searchValue } });
   }
 
-  ngOnInit(): void {
-    const userData = localStorage.getItem('user');
-      if (userData !== null) {
-        const user: User = JSON.parse(userData);
-        if (user && user.role) {
-          this.role = user.role;
-        }
-      }
-  }
+  
 
   isActive(url: string): boolean {
     return this.router.url === url;
@@ -70,10 +69,8 @@ export class NavBarComponent implements OnInit {
     this.router.navigateByUrl('/');
   }
 
-  save() {
-    
+  onSave() {
+    this.saveEvent.emit();
   }
 
-  cancel() {}
 }
-

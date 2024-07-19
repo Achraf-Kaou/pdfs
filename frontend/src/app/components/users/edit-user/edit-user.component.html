@@ -7,6 +7,15 @@
     </div>
   </div>
 }
+@if (errorMessage) {
+  <div class="container fixed-top mt-2">
+    <div class="row justify-content-center">
+      <div class="col-md-6">
+           <ngb-alert #selfClosingAlert class=" text-center" type="danger" (closed)="errorMessage = ''">{{ errorMessage }}</ngb-alert>
+      </div>
+    </div>
+  </div>
+}
 <ng-template #content let-modal>
     <div class="modal-header">
       <h4 class="modal-title" id="modal-basic-title">Edit user {{ user.firstName }} {{ user.lastName }}</h4>
@@ -75,6 +84,7 @@
             <option value="">Choose role</option>
             <option value="Admin">Admin</option>
             <option value="User">User</option>
+            <option value="Guest">Guest</option>
           </select>
           <div *ngIf="role && role.invalid && (role.dirty || role.touched)"
             class="text-danger">
@@ -93,6 +103,10 @@
             <div class="col form-check mx-2 d-flex align-items-center">
               <input class="form-check-input" type="checkbox" id="permissionWrite" formControlName="1">
               <label class="form-check-label" for="permissionWrite">Write</label>
+            </div>
+            <div class="col form-check mx-2">
+              <input class="form-check-input" type="checkbox" id="permissionDelete" formControlName="2">
+              <label class="form-check-label" for="permissionDelete">Delete</label>
             </div>
           </div>
         </div>

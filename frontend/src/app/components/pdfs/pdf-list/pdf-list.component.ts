@@ -44,26 +44,37 @@ export class PdfListComponent implements OnInit{
         }
       }
   }
-  canDelete(pdf: PdfDocument): boolean {
+
+  canReadOnly(): any{
+    console.log(this.user?.role === 'Admin' || this.user?.role === 'Guest' || (this.user?.role === 'User' && this.user.permission.length === 1 && this.user.permission[0] === 'Read'))
+    return this.user?.role === 'Admin' || this.user?.role === 'Guest' || (this.user?.role === 'User' && this.user.permission.length === 1 && this.user.permission[0] === 'Read')
+  }
+
+  canEdit(){
+    return this.user?.role === 'User' && this.user?.permission.includes('Write');
+  }
+
+  canDelete() {
+    return this.user?.role === 'User' && this.user?.permission.includes('Delete');
+  }
+  /* canDelete(pdf: PdfDocument): boolean {
     return this.role === 'Admin' || (pdf.userHistory && pdf.userHistory.length > 0 && pdf.userHistory[0].id === this.userId);
   }
   
   canEdit(pdf: PdfDocument): boolean | null {
     return this.role === 'Admin' || (this.permissions && this.permissions.includes("Write"));
-  }
+  } */
   
-  canEditOrDelete(pdf: PdfDocument): boolean {
+  /* canEditOrDelete(pdf: PdfDocument): boolean {
     return this.canEdit(pdf) || this.canDelete(pdf);
   }
 
   canEditAndDelete(pdf: PdfDocument): boolean | null {
     return this.isOwner(pdf) || (this.canEdit(pdf) && this.canDelete(pdf)); 
-  }
+  } */
 
   isOwner(pdf: PdfDocument) : boolean | null {
     const user: User = pdf.userHistory[0];
-    console.log(pdf.userHistory[0]===this.user)
-    console.log(this.user, pdf.userHistory[0])
     return user.id===this.user?.id;
   }
 

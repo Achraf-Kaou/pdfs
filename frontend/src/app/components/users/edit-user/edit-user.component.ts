@@ -1,46 +1,54 @@
 import { Component, Input, OnInit, TemplateRef, ViewChild } from '@angular/core';
 import { NgbAlert, NgbModal, NgbModalModule } from '@ng-bootstrap/ng-bootstrap';
 import { UserService } from '../../../services/user.service';
-import { Observable, Subject, debounceTime, tap } from 'rxjs';
-import { FormArray, FormBuilder, FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
+import { BehaviorSubject, debounceTime, tap } from 'rxjs';
+import { FormArray, FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { CommonModule } from '@angular/common';
-import { HttpClientJsonpModule } from '@angular/common/http';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { User } from '../../../models/User';
 
 
 @Component({
   selector: 'edit-user',
   standalone: true,
-  imports: [FormsModule, ReactiveFormsModule, NgbModalModule, NgbAlert, CommonModule, HttpClientJsonpModule],
+  imports: [FormsModule, ReactiveFormsModule, NgbModalModule, NgbAlert, CommonModule],
   templateUrl: './edit-user.component.html'
 })
 export class EditUserComponent implements OnInit {
   @Input() user!: User;
   editUserForm!: FormGroup;
   @ViewChild('content') content!: TemplateRef<any>;
-  private _message$ = new Subject<string>();
-  successMessage = '';
+  private _successMessage$ = new BehaviorSubject<string>('');
+  private _errorMessage$ = new BehaviorSubject<string>('');
+  successMessage: string | null = null;
+  errorMessage: string | null = null;
   @ViewChild('selfClosingAlert', { static: false }) selfClosingAlert: NgbAlert | undefined;
   showPassword!: boolean;
 
 
-  constructor(private userService: UserService, private modalService: NgbModal, private http: HttpClient) {
-    this._message$
-      .pipe(
-        takeUntilDestroyed(),
-        tap((message) => (this.successMessage = message)),
-        debounceTime(5000),
-      )
-      .subscribe(() => this.selfClosingAlert?.close());
+  constructor(private userService: UserService, private modalService: NgbModal) {
+    this._successMessage$
+			.pipe(
+				takeUntilDestroyed(),
+				tap((message) => (this.successMessage = message)),
+				debounceTime(5000),
+			)
+			.subscribe(() => this.selfClosingAlert?.close());
+
+      this._errorMessage$
+			.pipe(
+				takeUntilDestroyed(),
+				tap((message) => (this.errorMessage= message)),
+				debounceTime(5000),
+			)
+			.subscribe(() => this.selfClosingAlert?.close());
       this.showPassword = false;
   }
 
   ngOnInit() {
     if (typeof localStorage !== 'undefined') {
       if (localStorage.getItem('userEdited') === 'true') {
-        this._message$.next(`User edited successfully.`);
+        this._successMessage$.next(`User edited successfully.`);
         localStorage.removeItem('userEdited');
       }
     }
@@ -108,20 +116,24 @@ export class EditUserComponent implements OnInit {
       email: this.editUserForm.get('email')?.value,
       password: this.editUserForm.get('password')?.value,
       role: this.editUserForm.get('role')?.value,
-      permission: (this.editUserForm.get('permission') as FormArray).controls.map((control, index) => {
-        if (control.value) {
-          switch (index) {
-            case 0:
-              return 'Read';
-            case 1:
-              return 'Write';
-            default:
-              return '';
+      permission: this.editUserForm.get('role')?.value === 'Admin' ? ["Read", "Assign Permissions"] :  
+        this.editUserForm.get('role')?.value === 'Guest' ? ["Read"] :
+        (this.editUserForm.get('permission') as FormArray).controls.map((control, index) => {
+          if (control.value) {
+            switch (index) {
+              case 0:
+                return 'Read';
+              case 1:
+                return 'Write';
+              case 2: 
+                return 'Delete';
+              default:
+                return '';
+            }
+          } else {
+            return '';
           }
-        } else {
-          return '';
-        }
-      }).filter(permission => permission !== ''),
+        }).filter(permission => permission !== '')
     };
     this.userService.editUser(this.user.id, user)
       .subscribe(
@@ -136,13 +148,13 @@ export class EditUserComponent implements OnInit {
         (error: any) => {
           console.error(error);
           if (error.status === 400) {
-            this._message$.next(`Bad request: ${error.error}`);
+            this._errorMessage$.next(`Bad request: ${error.error}`);
             modal.close('Save click');
           } else if (error.status === 500) {
-            this._message$.next(`Internal server error: ${error.error}`);
+            this._errorMessage$.next(`Internal server error: ${error.error}`);
             modal.close('Save click');
           } else {
-            this._message$.next(`Error editing user: ${error.message}`);
+            this._errorMessage$.next(`Error editing user: ${error.message}`);
             modal.close('Save click');
           }
         }

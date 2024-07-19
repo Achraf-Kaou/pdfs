@@ -7,6 +7,15 @@
     </div>
   </div>
 }
+@if (errorMessage) {
+  <div class="container fixed-top mt-2">
+    <div class="row justify-content-center">
+      <div class="col-md-6">
+           <ngb-alert #selfClosingAlert class=" text-center" type="danger" (closed)="errorMessage = ''">{{ errorMessage }}</ngb-alert>
+      </div>
+    </div>
+  </div>
+}
 <ng-template #content let-modal>
   <div class="modal-header">
       <h4 class="modal-title" id="modal-title">Profile deletion</h4>

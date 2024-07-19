@@ -11,8 +11,8 @@
         <form class="d-flex" role="search" (ngSubmit)="onSearch()">
           <input class="form-control me-2" type="search" placeholder="Search a PDF" aria-label="Search" [formControl]="searchControl">
           <button class="btn btn-outline-success me-2" type="submit">Search</button>
-          <button class="btn btn-outline-primary ms-5" type="button" (click)="save()">save</button>
-          <button class="btn btn-outline-danger ms-2" type="button" (click)="cancel()">cancel</button>
+          <button class="btn btn-outline-primary ms-4" type="button" (click)="onSave()">save</button>
+          <button class="btn btn-outline-dark ms-3" type="button" (click)="logout()">logout</button>
         </form>
     </div>
     </div>
@@ -26,7 +26,7 @@
     </button>
     <div class="collapse navbar-collapse" id="navbarSupportedContent">
         <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-        <li class="nav-item dropdown" *ngIf="role==='Admin'">
+        <li class="nav-item dropdown" *ngIf="user.role==='Admin'">
             <a class="nav-link dropdown-toggle" href="/admin" [ngClass]="{ 'active': isActive('/admin') }" data-bs-toggle="dropdown" aria-expanded="false">Users</a>
             <ul class="dropdown-menu">
               <li><a class="dropdown-item" (click)="openModalAdd()">add user</a></li>
@@ -34,14 +34,13 @@
               <li><a class="dropdown-item" href="/admin">user list</a></li>
             </ul>
           </li>
-          <li class="nav-item dropdown">
+          <li class="nav-item dropdown" *ngIf="user.role==='User' && user.permission.includes('Write')">
             <a class="nav-link dropdown-toggle" href="/home" [ngClass]="{ 'active': isActive('/home') }" data-bs-toggle="dropdown" aria-expanded="false">Pdfs</a>
             <ul class="dropdown-menu">
               <li><a class="dropdown-item" (click)="openUploadModel()">Upload pdf</a></li>
               <li><hr class="dropdown-divider"></li>
               <li><a class="dropdown-item" href="/home">All Files</a></li>
               <li><a class="dropdown-item" href="/mypfds">My Files</a></li>
-
             </ul>
           </li>
         </ul>

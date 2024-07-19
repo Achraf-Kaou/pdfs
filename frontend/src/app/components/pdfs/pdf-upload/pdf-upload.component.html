@@ -23,7 +23,8 @@
           <label class="input-group-text" for="pdfFile">Choose file</label>
         </div>
         <div *ngIf="uploadForm.get('pdf')?.touched && uploadForm.get('pdf')?.invalid" class="text-danger">
-          PDF file is required
+          <div *ngIf="uploadForm.get('pdf')?.errors?.['required']">PDF file is required</div>
+          <div *ngIf="uploadForm.get('pdf')?.errors?.['fileType']">Only PDF files are allowed</div>
         </div>
         <div *ngIf="uploadForm.get('pdf')" class="progress my-3">
           <div
@@ -37,7 +38,7 @@
             {{ progress }}%
           </div>
         </div>
-        <div *ngIf="message" class="alert alert-danger" role="alert">{{ message }}</div>
+        <div *ngIf="errorMessage" class="alert alert-danger" role="alert">{{ errorMessage }}</div>
       </div>
       <hr>
       <div class="text-end">
@@ -47,12 +48,21 @@
   </div>
 </ng-template>
 
-  @if (Message) {
-    <div class="container fixed-top mt-2">
-      <div class="row justify-content-center">
-        <div class="col-md-6">
-          <ngb-alert #selfClosingAlert class=" text-center" type="success" (closed)="Message = ''"> {{ Message }} </ngb-alert>
-          </div>
-        </div>
+@if (successMessage) {
+  <div class="container fixed-top mt-2">
+    <div class="row justify-content-center">
+      <div class="col-md-6">
+           <ngb-alert #selfClosingAlert class=" text-center" type="success" (closed)="successMessage = ''">{{ successMessage }}</ngb-alert>
       </div>
-  }
+    </div>
+  </div>
+}
+@if (errorMessage) {
+ <div class="container fixed-top mt-2">
+   <div class="row justify-content-center">
+     <div class="col-md-6">
+          <ngb-alert #selfClosingAlert class=" text-center" type="danger" (closed)="errorMessage = ''">{{ errorMessage }}</ngb-alert>
+     </div>
+   </div>
+ </div>
+}

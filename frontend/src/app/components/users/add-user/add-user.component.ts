@@ -1,10 +1,10 @@
-import { Component, Input, TemplateRef, ViewChild } from '@angular/core';
+import { Component, TemplateRef, ViewChild } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { FormBuilder, FormControl, FormGroup, Validators, FormArray } from '@angular/forms';
+import { FormControl, FormGroup, Validators, FormArray } from '@angular/forms';
 import { NgbModal, NgbModalModule, NgbAlertModule, NgbAlert  } from '@ng-bootstrap/ng-bootstrap';
-import { Subject, debounceTime, tap } from 'rxjs';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { ReactiveFormsModule } from '@angular/forms'; // Import ReactiveFormsModule
+import { BehaviorSubject, Subject, debounceTime, tap } from 'rxjs';
+import { HttpClient } from '@angular/common/http';
+import { ReactiveFormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { User } from '../../../models/User';
 import { UserService } from '../../../services/user.service';
@@ -19,8 +19,10 @@ import { UserService } from '../../../services/user.service';
 })
 export class AddUserComponent {
   @ViewChild('content') content!: TemplateRef<any>;
-  private _message$ = new Subject<string>();
-  successMessage = '';
+  private _successMessage$ = new BehaviorSubject<string>('');
+  private _errorMessage$ = new BehaviorSubject<string>('');
+  successMessage: string | null = null;
+  errorMessage: string | null = null;
   @ViewChild('selfClosingAlert', { static: false }) selfClosingAlert: NgbAlert | undefined;
   addUserForm!: FormGroup;
   checkboxFormArray!: FormArray<FormControl<boolean | null>>;
@@ -29,10 +31,18 @@ export class AddUserComponent {
   showPassword!: boolean;
 
   constructor(private modalService: NgbModal, private http: HttpClient, private userService: UserService) {
-    this._message$
+    this._successMessage$
 			.pipe(
 				takeUntilDestroyed(),
 				tap((message) => (this.successMessage = message)),
+				debounceTime(5000),
+			)
+			.subscribe(() => this.selfClosingAlert?.close());
+
+      this._errorMessage$
+			.pipe(
+				takeUntilDestroyed(),
+				tap((message) => (this.errorMessage= message)),
 				debounceTime(5000),
 			)
 			.subscribe(() => this.selfClosingAlert?.close());
@@ -41,12 +51,9 @@ export class AddUserComponent {
   ngOnInit(): void {
     if (typeof localStorage !== 'undefined') {
       if (localStorage.getItem('userAdded') === 'true') {
-        this._message$.next(`User added successfully.`);
+        this._successMessage$.next(`User added successfully.`);
         localStorage.removeItem('userAdded');
       }
-    } else {
-      console.warn('localStorage is not available. This might occur in SSR or testing.');
-      // Handle accordingly, e.g., provide a fallback or mock
     }
     
     this.addUserForm = new FormGroup({
@@ -107,8 +114,8 @@ export class AddUserComponent {
       email: this.addUserForm.get('email')?.value,
       password: this.addUserForm.get('password')?.value,
       role: this.addUserForm.get('role')?.value,
-      permission: this.addUserForm.get('role')?.value === 'Admin' ? 
-        ["Read", "Write", "Assign Permissions"] : 
+      permission: this.addUserForm.get('role')?.value === 'Admin' ? ["Read", "Assign Permissions"] :  
+        this.addUserForm.get('role')?.value === 'Guest' ? ["Read"] :
         (this.addUserForm.get('permission') as FormArray).controls.map((control, index) => {
           if (control.value) {
             switch (index) {
@@ -116,6 +123,8 @@ export class AddUserComponent {
                 return 'Read';
               case 1:
                 return 'Write';
+              case 2: 
+                return 'Delete';
               default:
                 return '';
             }
@@ -138,13 +147,13 @@ export class AddUserComponent {
       (error: any) => {
         console.error(error);
         if (error.status === 400) {
-          this._message$.next(`Bad request: ${error.error}`);
+          this._errorMessage$.next(`Bad request: ${error.error}`);
           modal.close('Save click');
         } else if (error.status === 500) {
-          this._message$.next(`Internal server error: ${error.error}`);
+          this._errorMessage$.next(`Internal server error: ${error.error}`);
           modal.close('Save click');
         } else {
-          this._message$.next(`Error adding user: ${error.message}`);
+          this._errorMessage$.next(`Error adding user: ${error.message}`);
           modal.close('Save click');
         }
       }

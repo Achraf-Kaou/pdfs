@@ -1,9 +1,10 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnInit, ViewChild } from '@angular/core';
 import { PdfViewComponent } from "../../components/pdfs/pdf-view/pdf-view.component";
 import { NavBarComponent } from "../../components/nav-bar/nav-bar.component";
 import { PdfService } from '../../services/Pdf.service';
 import { ActivatedRoute } from '@angular/router';
 import { PdfDocument } from '../../models/Pdf';
+
 
 @Component({
     selector: 'app-pdf',
@@ -16,13 +17,15 @@ export class PdfComponent implements OnInit {
   pdf!: PdfDocument;
   pdfSrc!: Uint8Array;
   pdfViewer: any;
-  id!: string |null;
+  id!: string | null;
+  @ViewChild(PdfViewComponent) pdfView!: PdfViewComponent;
+
   constructor(private pdfService: PdfService, private route: ActivatedRoute ) {}
 
   ngOnInit(): void {
     const id = this.route.snapshot.paramMap.get('id');
+    this.id = id;
     this.getPdfById(id);
-    this.id=id;
   }
 
   getPdfById(id: string | null): void {
@@ -33,6 +36,7 @@ export class PdfComponent implements OnInit {
           const base64PDF = pdf.data;
           const byteNumbers = Array.from(atob(base64PDF));
           this.pdfSrc = new Uint8Array(byteNumbers.map((byte) => byte.charCodeAt(0)));
+          console.log(this.pdfSrc)
         } else {
           console.error('Invalid or empty PDF data');
         }
@@ -42,4 +46,9 @@ export class PdfComponent implements OnInit {
       }
     );
   }
+
+  onSave() {
+    this.pdfView.savePdf();
+  }
+
 }

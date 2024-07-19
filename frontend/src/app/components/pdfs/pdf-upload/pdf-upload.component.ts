@@ -1,15 +1,15 @@
 import { Component, OnInit, ViewChild, inject, TemplateRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormControl, FormGroup, FormsModule, Validators } from '@angular/forms';
+import { FormBuilder, FormControl, FormGroup, FormsModule, Validators } from '@angular/forms';
 import { ReactiveFormsModule } from '@angular/forms';
 import { PdfService } from '../../../services/Pdf.service';
 import { PdfDocument } from '../../../models/Pdf';
-import { Subject, debounceTime, tap } from 'rxjs';
+import { BehaviorSubject, Subject, debounceTime, tap } from 'rxjs';
 import { NgbAlert, ModalDismissReasons, NgbDatepickerModule, NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { User } from '../../../models/User';
 import { HttpEventType, HttpResponse } from '@angular/common/http';
-
+import { fileTypeValidator } from '../../../services/fileTypeValidator';
 
 @Component({
   selector: 'app-pdf-upload',
@@ -21,27 +21,39 @@ export class PdfUploadComponent implements OnInit {
   @ViewChild('content') content!: TemplateRef<any>;
   pdfSrc: string | ArrayBuffer | null = null;
   selectedFile!: File;
-  private _message$ = new Subject<string>();
-  Message = '';
+
+  private _successMessage$ = new BehaviorSubject<string>('');
+  private _errorMessage$ = new BehaviorSubject<string>('');
+  successMessage: string | null = null;
+  errorMessage: string | null = null;
   @ViewChild('selfClosingAlert', { static: false }) selfClosingAlert: NgbAlert | undefined;
+
   uploadForm!: FormGroup;
   progress = 0;
-  message = '';
 
-  constructor(private pdfService: PdfService, private modalService: NgbModal) {
-    this._message$
+  constructor(private pdfService: PdfService, private modalService: NgbModal, private fb: FormBuilder,) {
+    this.uploadForm = this.fb.group({
+      pdf: [null, [Validators.required, fileTypeValidator(['pdf'])]]
+    });
+    this._successMessage$
       .pipe(
-        takeUntilDestroyed(),
-        tap((message) => (this.Message = message)),
-        debounceTime(5000),
+        tap((message) => (this.successMessage = message)),
+        debounceTime(5000)
       )
-      .subscribe(() => this.selfClosingAlert?.close());
+      .subscribe(() => (this.successMessage = null));
+
+    this._errorMessage$
+      .pipe(
+        tap((message) => (this.errorMessage = message)),
+        debounceTime(5000)
+      )
+      .subscribe(() => (this.errorMessage = null));
   }
 
   ngOnInit(): void {
     if (typeof localStorage !== 'undefined') {
       if (localStorage.getItem('pdfAdded') === 'true') {
-        this._message$.next(`PDF added successfully.`);
+        this._successMessage$.next(`PDF added successfully.`);
         localStorage.removeItem('pdfAdded');
       }
     }
@@ -51,6 +63,10 @@ export class PdfUploadComponent implements OnInit {
       description: new FormControl(''),
       pdf: new FormControl('', [Validators.required]),
     });
+  }
+  ngOnDestroy() {
+    this._successMessage$.unsubscribe();
+    this._errorMessage$.unsubscribe();
   }
 
   open(){
@@ -131,13 +147,9 @@ export class PdfUploadComponent implements OnInit {
       (error: any) => {
         console.error('Upload error:', error);
         this.progress = 0;
-        if (error && error.message) {
-          this.message = error.message;
-        } else {
-          this.message = 'Could not upload the file!';
-        }
-        // Do not reload the page on error
+        this.errorMessage = 'Could not upload the file!';
       }
     );
   }
 }
+

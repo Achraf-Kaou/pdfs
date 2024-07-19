@@ -5,7 +5,7 @@
           <div class="card-body">
             <div class="d-flex flex-wrap">
               <h5 class="font-size-16 me-3">Files</h5>
-              <div class="ms-auto">
+              <div class="ms-auto" *ngIf="canDelete() || canEdit()">
                 <button class="btn btn-primary" type="button" (click)="openUploadModel()">
                   <i class="bi bi-plus"></i>Create New
                 </button>
@@ -23,34 +23,43 @@
                   </tr>
                 </thead>
                 <tbody>
+                  <!-- if there is no data -->
                   <tr *ngIf="(pdfs | async)?.length === 0">
                     <td colspan="5" style="text-align: center">No PDFs found</td>
                   </tr>
+                  <!-- else -->
                   <tr *ngFor="let pdf of pdfs | async">
+                    <!-- title -->
                     <td ><i class="text-primary me-2"></i>{{ pdf.titre }}</td>
+                    <!-- date -->
                     <td>{{ formatDate(pdf.dateHistory[0]) }}</td>
+                    <!-- size -->
                     <td>{{transform(pdf.size)}}</td>
+                    <!-- user -->
                     <td>{{ pdf.userHistory[0].firstName }} {{ pdf.userHistory[0].lastName }}</td>
+                    <!-- action -->
                     <td class="overflow-hidden">
                       <div ngbDropdown container="body">
-                        <ng-container *ngIf="canEditOrDelete(pdf); else viewOnly">
-                          <ng-container *ngIf="isOwner(pdf) || (canEdit(pdf) && canDelete(pdf)) ; else editOnly">
-                            <button type="button" class="btn btn-outline-secondary btn-sm" ngbDropdownToggle>Actions</button>
-                            <div ngbDropdownMenu>
-                              <button ngbDropdownItem (click)="navigateTo(pdf.id)">Edit</button>
-                              <div class="dropdown-divider"></div>
-                              <button ngbDropdownItem (click)="openDeleteModel(pdf)">Delete</button>
-                            </div>
-                          </ng-container>
-                          <ng-template #editOnly>
-                            <button type="button" class="btn btn-outline-secondary btn-sm" (click)="navigateTo(pdf.id)">Edit</button>
-                          </ng-template>
+                        <!-- Check if user can delete -->
+                        <ng-container *ngIf="canDelete()">
+                          <button type="button" class="btn btn-outline-secondary btn-sm" ngbDropdownToggle>Actions</button>
+                          <div ngbDropdownMenu>
+                            <button ngbDropdownItem (click)="navigateTo(pdf.id)">Edit</button>
+                            <div class="dropdown-divider"></div>
+                            <button ngbDropdownItem (click)="openDeleteModel(pdf)">Delete</button>
+                          </div>
                         </ng-container>
-                        <ng-template #viewOnly>
+                        <!-- Check if user can edit -->
+                        <ng-container *ngIf="canEdit() && !canDelete()">
+                          <button type="button" class="btn btn-outline-secondary btn-sm" (click)="navigateTo(pdf.id)">Edit</button>
+                        </ng-container>
+                        <!-- Check if user can view only -->
+                        <ng-container *ngIf="canReadOnly()">
                           <button type="button" class="btn btn-outline-secondary btn-sm" (click)="navigateToPdf(pdf.id)">View</button>
-                        </ng-template>
+                        </ng-container>
                       </div>                      
                     </td>
+                    <!-- fin action -->
                   </tr>
                 </tbody>
               </table>

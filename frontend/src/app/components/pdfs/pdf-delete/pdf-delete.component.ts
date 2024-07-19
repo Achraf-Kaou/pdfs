@@ -2,8 +2,7 @@ import { Component, TemplateRef, ViewChild } from '@angular/core';
 import { NgbAlert, NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { PdfDocument } from '../../../models/Pdf';
 import { PdfService } from '../../../services/Pdf.service';
-import { Subject, debounceTime, tap } from 'rxjs';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { BehaviorSubject, Subject, debounceTime, tap } from 'rxjs';
 
 @Component({
   selector: 'app-pdf-delete',
@@ -16,24 +15,32 @@ export class PdfDeleteComponent {
 
   @ViewChild('content') content!: TemplateRef<any>;
   pdf!: PdfDocument;
-  private _message$ = new Subject<string>();
-  successMessage = '';
+  private _successMessage$ = new BehaviorSubject<string>('');
+  private _errorMessage$ = new BehaviorSubject<string>('');
+  successMessage: string | null = null;
+  errorMessage: string | null = null;
   @ViewChild('selfClosingAlert', { static: false }) selfClosingAlert: NgbAlert | undefined;
 
   constructor(private modalService: NgbModal, private pdfService: PdfService){
-    this._message$
-			.pipe(
-				takeUntilDestroyed(),
-				tap((message) => (this.successMessage = message)),
-				debounceTime(5000),
-			)
-			.subscribe(() => this.selfClosingAlert?.close());
+    this._successMessage$
+      .pipe(
+        tap((message) => (this.successMessage = message)),
+        debounceTime(5000)
+      )
+      .subscribe(() => (this.successMessage = null));
+
+    this._errorMessage$
+      .pipe(
+        tap((message) => (this.errorMessage = message)),
+        debounceTime(5000)
+      )
+      .subscribe(() => (this.errorMessage = null));
   }
 
   ngOnInit() {
     if (typeof localStorage !== 'undefined') {
       if (localStorage.getItem('PDFDeleted') === 'true') {
-        this._message$.next(`PDF deleted successfully.`);
+        this._successMessage$.next(`PDF deleted successfully.`);
         localStorage.removeItem('PDFDeleted');
       }
     }
@@ -49,7 +56,7 @@ export class PdfDeleteComponent {
     this.pdfService.deletePdf(this.pdf.id)
     .subscribe(
       (response: any) => {
-        console.log(response !== undefined); // Use !== for strict inequality comparison
+        console.log(response !== undefined);
         if (response !== undefined) {
           modal.close('Save click');
             localStorage.setItem('PDFDeleted', 'true');
@@ -59,11 +66,11 @@ export class PdfDeleteComponent {
       (error: any) => {
         console.error(error);
         if (error.status === 400) {
-          this._message$.next(`Bad request: ${error.error}`);
+          this._errorMessage$.next(`Bad request: ${error.error}`);
         } else if (error.status === 500) {
-          this._message$.next(`Internal server error: ${error.error}`);
+          this._errorMessage$.next(`Internal server error: ${error.error}`);
         } else {
-          this._message$.next(`Error deleting PDF: ${error.message}`);
+          this._errorMessage$.next(`Error deleting PDF: ${error.message}`);
         }
         modal.close('Save click');
       }

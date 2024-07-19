@@ -32,19 +32,39 @@ import { User } from '../../../models/User';
         NgbPaginationModule
     ]
 })
-export class UserListComponent {
-  
-  refreshUsers() {
-  throw new Error('Method not implemented.');
-  }
+export class UserListComponent implements OnInit {
   @Input() users: Observable<User[]> | null = null;
   selectedUser: User | null = null;
   
   @ViewChild(EditUserComponent) editUserComponent!: EditUserComponent;
   @ViewChild(DeleteUserComponent) deleteUserComponent!: DeleteUserComponent;
 
+  paginatedUsers: User[] = [];
+  page = 1;
+  pageSize = 5;
+  collectionSize = 0;
+
   
   constructor() { }
+
+  ngOnInit() {
+    if (this.users) {
+      this.users.subscribe(data => {
+        this.collectionSize = data.length;
+        this.refreshUsers();
+      });
+    }
+  }
+
+  refreshUsers() {
+    if (this.users) {
+      this.users.subscribe(data => {
+        this.paginatedUsers = data
+          .map((user, i) => ({ id: i + 1, ...user }))
+          .slice((this.page - 1) * this.pageSize, (this.page - 1) * this.pageSize + this.pageSize);
+      });
+    }
+  }
 
   
   openModalEdit(user:  User){
