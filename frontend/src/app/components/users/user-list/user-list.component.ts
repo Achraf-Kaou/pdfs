@@ -1,4 +1,4 @@
-import { Component, Input, OnInit, ViewChild } from '@angular/core';
+import { Component, Input, OnInit, ViewChild, AfterViewInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { DecimalPipe } from '@angular/common';
 import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
@@ -11,11 +11,20 @@ import { DeleteUserComponent } from '../delete-user/delete-user.component';
 import { HttpClientModule, HttpClient } from '@angular/common/http';
 import { NgbPaginationModule } from '@ng-bootstrap/ng-bootstrap';
 import { User } from '../../../models/User';
-
+import {MatPaginator, MatPaginatorModule} from '@angular/material/paginator';
+import {MatSort, MatSortModule} from '@angular/material/sort';
+import {MatTableDataSource, MatTableModule} from '@angular/material/table';
+import {MatInputModule} from '@angular/material/input';
+import {MatFormFieldModule} from '@angular/material/form-field';
+import {MatIconModule} from '@angular/material/icon';
+import { MatMenuModule } from '@angular/material/menu';
+import {MatDividerModule} from '@angular/material/divider';
+import {MatButtonModule} from '@angular/material/button';
 
 @Component({
     selector: 'user-list',
     standalone: true,
+    styleUrl: './user-list.component.css',
     templateUrl: './user-list.component.html',
     providers: [UserService, DecimalPipe],
     imports: [
@@ -28,50 +37,75 @@ import { User } from '../../../models/User';
         AddUserComponent,
         EditUserComponent,
         DeleteUserComponent,
-        HttpClientModule,
-        NgbPaginationModule
-    ]
+        NgbPaginationModule,
+        MatFormFieldModule,
+        MatInputModule,
+        MatTableModule,
+        MatSortModule,
+        MatPaginatorModule, 
+        MatIconModule,
+        MatMenuModule, MatDividerModule, MatButtonModule
+      ]
 })
-export class UserListComponent implements OnInit {
+
+export class UserListComponent implements OnInit, AfterViewInit {
   @Input() users: Observable<User[]> | null = null;
   selectedUser: User | null = null;
-  
+
+  @ViewChild(AddUserComponent) addUserComponent!: AddUserComponent;
   @ViewChild(EditUserComponent) editUserComponent!: EditUserComponent;
   @ViewChild(DeleteUserComponent) deleteUserComponent!: DeleteUserComponent;
 
-  paginatedUsers: User[] = [];
-  page = 1;
-  pageSize = 5;
-  collectionSize = 0;
+  dataSource!: MatTableDataSource<User>;
+  displayedColumns: string[] = ['name', 'email', 'role', 'permissions', 'actions'];
 
+  @ViewChild(MatPaginator) paginator!: MatPaginator;
+  @ViewChild(MatSort) sort!: MatSort;
   
-  constructor() { }
+  constructor(private userService: UserService) { }
 
   ngOnInit() {
     if (this.users) {
       this.users.subscribe(data => {
-        this.collectionSize = data.length;
-        this.refreshUsers();
+        this.dataSource = new MatTableDataSource(data);
+        this.dataSource.paginator = this.paginator;
+        this.dataSource.sort = this.sort;
+      });
+    } else {
+      this.userService.getAllUsers().subscribe(data => {
+        this.dataSource = new MatTableDataSource(data);
+        this.dataSource.paginator = this.paginator;
+        this.dataSource.sort = this.sort;
       });
     }
   }
 
-  refreshUsers() {
-    if (this.users) {
-      this.users.subscribe(data => {
-        this.paginatedUsers = data
-          .map((user, i) => ({ id: i + 1, ...user }))
-          .slice((this.page - 1) * this.pageSize, (this.page - 1) * this.pageSize + this.pageSize);
-      });
+  ngAfterViewInit() {
+    if (this.dataSource) {
+      this.dataSource.paginator = this.paginator;
+      this.dataSource.sort = this.sort;
     }
   }
 
-  
-  openModalEdit(user:  User){
+  applyFilter(event: Event) {
+    const filterValue = (event.target as HTMLInputElement).value;
+    this.dataSource.filter = filterValue.trim().toLowerCase();
+
+    if (this.dataSource.paginator) {
+      this.dataSource.paginator.firstPage();
+    }
+  }
+
+  openModalAdd() {
+    this.addUserComponent.open();
+  }
+
+  openModalEdit(user: User) {
     this.selectedUser = user;
     this.editUserComponent.open(user);
   }
-  openModalDelete(user: User){
+
+  openModalDelete(user: User) {
     this.selectedUser = user;
     this.deleteUserComponent.open(user);
   }
