@@ -56,7 +56,6 @@ public class PdfService {
     }
 
     public List<PdfDocument> getPdfsFiltered(String titre) {
-        System.out.println(titre);
         if (titre.endsWith(".pdf")) {
             titre = titre.substring(0, titre.length() - 4); // Remove ".pdf"
             System.out.println("Hello, World!");

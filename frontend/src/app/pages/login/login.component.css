@@ -1,0 +1,42 @@
+
+
+.container.h-100 {
+  height: 100vh;
+}
+
+.mat-card {
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+  max-width: 800px;
+}
+
+.text-center {
+  text-align: center;
+}
+
+.w-100 {
+  width: 100%;
+}
+
+.mat-form-field-custom .mat-input-element {
+  background-color: white !important;
+  padding: 10px;
+  border-radius: 5px;
+}
+
+.shadow-lg {
+  box-shadow: 0 1rem 3rem rgba(0, 0, 0, 0.175) !important;
+}
+
+.p-4 {
+  padding: 1.5rem !important;
+}
+
+img {
+  border-radius: 10px;
+  display: block;
+}
+
+.vertical-line {
+  border-left: 1px solid #ccc;
+  height: 100%;
+}

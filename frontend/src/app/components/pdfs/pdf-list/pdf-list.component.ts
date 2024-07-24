@@ -1,13 +1,19 @@
-import { Component, Input, OnInit, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, Input, OnChanges, OnInit, SimpleChanges, ViewChild } from '@angular/core';
 import { NgbDropdownModule } from '@ng-bootstrap/ng-bootstrap';
-import { PdfService } from '../../../services/Pdf.service';
-import { Observable } from 'rxjs';
 import { PdfDocument } from '../../../models/Pdf';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { PdfUploadComponent } from "../pdf-upload/pdf-upload.component";
 import { PdfDeleteComponent } from "../pdf-delete/pdf-delete.component";
 import { User } from '../../../models/User';
+import { MatPaginator, MatPaginatorModule  } from '@angular/material/paginator';
+import { MatTableDataSource, MatTableModule  } from '@angular/material/table';
+import { MatSort, MatSortModule  } from '@angular/material/sort';
+import { Observable } from 'rxjs';
+import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+import { faFilePdf,faEye } from '@fortawesome/free-solid-svg-icons';
+import { MatMenuModule } from '@angular/material/menu';
+import { MatIconModule } from '@angular/material/icon';
 
 
 @Component({
@@ -15,24 +21,36 @@ import { User } from '../../../models/User';
     standalone: true,
     templateUrl: './pdf-list.component.html',
     styleUrl: './pdf-list.component.css',
-    imports: [NgbDropdownModule, CommonModule, PdfUploadComponent, PdfDeleteComponent]
+    imports: [NgbDropdownModule, CommonModule, PdfUploadComponent, PdfDeleteComponent, MatPaginatorModule, MatTableModule, MatSortModule, FontAwesomeModule, MatMenuModule, MatIconModule]
 })
-export class PdfListComponent implements OnInit{
+export class PdfListComponent implements OnInit, AfterViewInit, OnChanges{
 
   @ViewChild(PdfUploadComponent) pdfUploadComponent!: PdfUploadComponent;
   @ViewChild(PdfDeleteComponent) pdfDeleteComponent!: PdfDeleteComponent;
-  @Input() pdfs: Observable<PdfDocument[]> | null = null;
+  @Input() pdfDocuments$!: Observable<PdfDocument[]>;
+  @Input() searchQuery: string = '';
   selectedPdf: PdfDocument | null = null;
   role: String | null = null;
   userId: object | undefined;
   permissions : Array<string> | null = null;
   user : User | null = null;
+  dataSource = new MatTableDataSource<PdfDocument>;
+  displayedColumns: string[] = ['name', 'date', 'size', 'user', 'actions'];
 
-
-  
-  constructor(private pdfService: PdfService, private router: Router){}
+  @ViewChild(MatPaginator) paginator!: MatPaginator;
+  @ViewChild(MatSort) sort!: MatSort;
+  faFilePdf = faFilePdf;
+  faEye = faEye;
+  constructor(private router: Router){}
 
   ngOnInit(): void {
+    this.pdfDocuments$.subscribe(data => {
+      this.dataSource = new MatTableDataSource(data);
+      this.dataSource.paginator = this.paginator;
+      this.dataSource.sort = this.sort;
+      
+    });
+    console.log(this.dataSource.data)
     const userData = localStorage.getItem('user');
       if (userData !== null) {
         const user: User = JSON.parse(userData);
@@ -43,10 +61,32 @@ export class PdfListComponent implements OnInit{
           this.user = user;
         }
       }
+    
+  }
+
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes['pdfDocuments$']) {
+      this.pdfDocuments$.subscribe(data => {
+        this.dataSource.data = data;
+        this.applyFilter(this.searchQuery);
+      });
+    }
+    if (changes['searchQuery']) {
+      this.applyFilter(this.searchQuery);
+    }
+  }
+
+  applyFilter(query: string): void {
+    this.dataSource.filter = query.trim().toLowerCase();
+  }
+
+  ngAfterViewInit() {
+    // Initialize paginator and sort only after view initialization
+    this.dataSource.paginator = this.paginator;
+    this.dataSource.sort = this.sort;
   }
 
   canReadOnly(): any{
-    console.log(this.user?.role === 'Admin' || this.user?.role === 'Guest' || (this.user?.role === 'User' && this.user.permission.length === 1 && this.user.permission[0] === 'Read'))
     return this.user?.role === 'Admin' || this.user?.role === 'Guest' || (this.user?.role === 'User' && this.user.permission.length === 1 && this.user.permission[0] === 'Read')
   }
 
@@ -57,22 +97,7 @@ export class PdfListComponent implements OnInit{
   canDelete() {
     return this.user?.role === 'User' && this.user?.permission.includes('Delete');
   }
-  /* canDelete(pdf: PdfDocument): boolean {
-    return this.role === 'Admin' || (pdf.userHistory && pdf.userHistory.length > 0 && pdf.userHistory[0].id === this.userId);
-  }
   
-  canEdit(pdf: PdfDocument): boolean | null {
-    return this.role === 'Admin' || (this.permissions && this.permissions.includes("Write"));
-  } */
-  
-  /* canEditOrDelete(pdf: PdfDocument): boolean {
-    return this.canEdit(pdf) || this.canDelete(pdf);
-  }
-
-  canEditAndDelete(pdf: PdfDocument): boolean | null {
-    return this.isOwner(pdf) || (this.canEdit(pdf) && this.canDelete(pdf)); 
-  } */
-
   isOwner(pdf: PdfDocument) : boolean | null {
     const user: User = pdf.userHistory[0];
     return user.id===this.user?.id;

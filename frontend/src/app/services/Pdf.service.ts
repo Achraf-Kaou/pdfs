@@ -43,8 +43,8 @@ export class PdfService {
     })
   }
 
-  getPdfsFiltered(filterValue: string): Observable<PdfDocument[]> {
-    if (!filterValue) {
+  getPdfsFiltered(filterValue: string| null): Observable<PdfDocument[]> {
+    if (filterValue === null){
       return this.getPdfs();
     }
     return this.http.get<PdfDocument[]>(`${this.uploadUrl}/filtered?titre=${filterValue}`);

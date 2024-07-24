@@ -1,4 +1,4 @@
-import { Component, ViewChild } from '@angular/core';
+import { Component, ViewChild, ChangeDetectionStrategy, signal } from '@angular/core';
 import { Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
@@ -8,12 +8,22 @@ import { Subject, debounceTime, tap } from 'rxjs';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { UserService } from '../../services/user.service';
 import { User } from '../../models/User';
+import {MatCardModule} from '@angular/material/card';
+import { MatButtonModule } from '@angular/material/button';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatIconModule } from '@angular/material/icon';
+import { MatInputModule } from '@angular/material/input';
+
 
 @Component({
   standalone: true,
   selector: 'app-login',
+  styleUrl: './login.component.css',
   templateUrl: './login.component.html',
-  imports :[ ReactiveFormsModule, CommonModule, RouterLink, RouterLinkActive, RouterOutlet, NgbAlertModule]
+  imports :[ ReactiveFormsModule, CommonModule, RouterLink, RouterLinkActive, RouterOutlet, NgbAlertModule, MatFormFieldModule, MatInputModule, MatButtonModule, MatIconModule,
+    MatCardModule,
+  ], 
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class LoginComponent {
   loginForm!: FormGroup;
@@ -22,6 +32,11 @@ export class LoginComponent {
   @ViewChild('selfClosingAlert', { static: false }) selfClosingAlert: NgbAlert | undefined;
   private _message$ = new Subject<string>();
   error = '';
+  hide = signal(true);
+  clickEvent(event: MouseEvent) {
+    this.hide.set(!this.hide());
+    event.stopPropagation();
+  }
 
   constructor(private http: HttpClient, private userService: UserService, private router: Router) { 
     this._message$

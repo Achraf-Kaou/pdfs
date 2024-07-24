@@ -8,9 +8,9 @@
       </button>
       <div class="collapse navbar-collapse" id="navbarSupportedContent">
         <ul class="navbar-nav me-auto mb-2 mb-lg-0"></ul>
-        <form class="d-flex" role="search" (ngSubmit)="onSearch()">
-          <input class="form-control me-2" type="search" placeholder="Search a PDF" aria-label="Search" [formControl]="searchControl">
-          <button class="btn btn-outline-success me-2" type="submit">Search</button>
+        <form class="d-flex" role="search">
+          <input class="form-control me-2" type="search" placeholder="Search a PDF" aria-label="Search" [formControl]="searchControl" (input)="onInputChange()">
+          <button class="btn btn-outline-success me-2" type="button" (click)="onSearch()">Search</button>
           <button class="btn btn-outline-primary ms-4" type="button" (click)="onSave()">save</button>
           <button class="btn btn-outline-dark ms-3" type="button" (click)="logout()">logout</button>
         </form>
@@ -44,9 +44,9 @@
             </ul>
           </li>
         </ul>
-        <form class="d-flex" role="search" (ngSubmit)="onSearch()">
-          <input class="form-control me-2" type="search" placeholder="Search a PDF" aria-label="Search" [formControl]="searchControl">
-          <button class="btn btn-outline-success me-2" type="submit" >Search</button>
+        <form class="d-flex" role="search" >
+          <input class="form-control me-2" type="search" placeholder="Search a PDF" aria-label="Search" [formControl]="searchControl" (input)="onInputChange()" matInput #input>
+          <button class="btn btn-outline-success me-2" type="button" (click)="onSearch()">Search</button>
           <button class="btn btn-outline-dark ms-5" type="button" (click)="logout()">logout</button>
         </form>
     </div>

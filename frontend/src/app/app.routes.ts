@@ -18,6 +18,7 @@ export const routes: Routes = [
     { path: 'pdfUpload', component: PdfUploadComponent },
     { path: 'pdfList', component: PdfListComponent },
     { path: 'home', component: HomeComponent },
+    { path: 'home/search/:search', component: HomeComponent },
     { path: 'pdf/:id', component: PdfComponent },
     { path: 'mypfds', component: MypdfsPage },
     { path: 'view/:id', component: ViewComponent },

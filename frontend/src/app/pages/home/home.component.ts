@@ -1,49 +1,48 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { NavBarComponent } from "../../components/nav-bar/nav-bar.component";
 import { PdfListComponent } from "../../components/pdfs/pdf-list/pdf-list.component";
-import { debounceTime, distinctUntilChanged, Observable } from 'rxjs';
 import { PdfDocument } from '../../models/Pdf';
-import { FormControl } from '@angular/forms';
 import { PdfService } from '../../services/Pdf.service';
 import { ActivatedRoute } from '@angular/router';
-import { User } from '../../models/User';
+import { Observable } from 'rxjs';
 
 @Component({
     selector: 'app-home',
     standalone: true,
     templateUrl: './home.component.html',
-    styleUrl: './home.component.css',
+    styleUrls: ['./home.component.css'],
     imports: [NavBarComponent, PdfListComponent]
 })
-export class HomeComponent {
-    pdfs$: Observable<PdfDocument[]> | null = null;
-    filter = new FormControl('');
-    searchQuery!: string;
+export class HomeComponent implements OnInit {
+    pdfDocuments$!: Observable<PdfDocument[]>;
+    searchQuery: string = '';
 
     constructor(private pdfService: PdfService, private route: ActivatedRoute) {}
 
     ngOnInit(): void {
-      if (this.searchQuery){
-        this.route.queryParams.subscribe(params => {
-          this.searchQuery = params['search'];
-          this.fetchPdfs();
+        // Retrieve the search query from local storage
+        const storedSearchQuery = localStorage.getItem('searchQuery');
+        if (storedSearchQuery) {
+            this.searchQuery = storedSearchQuery;
+        }
+
+        // Watch for query param changes and apply the filter
+        this.route.queryParams.subscribe((params) => {
+            this.searchQuery = params['search'] || this.searchQuery;
+            this.applyFilter(this.searchQuery);
         });
-      }else{
-        this.loadPdfs();
-      }
+
+        // Initial filter application
+        this.applyFilter(this.searchQuery);
     }
 
-    
-    
-    fetchPdfs(): void {
-      this.pdfs$ = this.pdfService.getPdfsFiltered(this.searchQuery);
-    }
-    loadPdfs(filterValue: string = ''): void {
-      this.pdfs$ = this.pdfService.getPdfsFiltered(filterValue);
+    applyFilter(searchQuery: string | null) {
+        this.pdfDocuments$ = this.pdfService.getPdfsFiltered(searchQuery);
     }
 
-    onSearchValueChange(searchValue: string): void {
-      this.loadPdfs(searchValue);
+    onSearchValueChange(searchQuery: string): void {
+        this.searchQuery = searchQuery;
+        localStorage.setItem('searchQuery', searchQuery); // Save the search query to local storage
+        this.applyFilter(searchQuery);
     }
-
 }
