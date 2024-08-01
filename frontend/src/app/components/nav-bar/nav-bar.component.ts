@@ -85,6 +85,10 @@ export class NavBarComponent implements OnInit, OnChanges {
     this.pdfUploadComponent.open();
   }
 
+  navigateToUsers() {
+    this.router.navigate(['admin']);
+  }
+
   onInputChange() {
     const value = this.searchControl.value || '';
     localStorage.setItem('searchQuery', value);

@@ -7,6 +7,7 @@ import { ActivatedRoute } from '@angular/router';
 import { Observable } from 'rxjs';
 import { Pdf } from '../../models/Pdf';
 import { PdfService } from '../../services/Pdf.service';
+import { User } from '../../models/User';
 
 @Component({
   selector: 'app-pdfs',
@@ -18,10 +19,19 @@ import { PdfService } from '../../services/Pdf.service';
 export class PdfsComponent {
   pdfDocuments$!: Observable<Pdf[]>;
   searchQuery: string = '';
+  user!: User;
 
   constructor(private pdfService: PdfService, private route: ActivatedRoute) {}
 
   ngOnInit(): void {
+    const userData = localStorage.getItem('user');
+    if (userData !== null) {
+      const user: User = JSON.parse(userData);
+      if (user) {
+        this.user = user;
+      }
+    }
+
       // Retrieve the search query from local storage
       const storedSearchQuery = localStorage.getItem('searchQuery');
       if (storedSearchQuery) {
@@ -38,6 +48,10 @@ export class PdfsComponent {
       this.applyFilter(this.searchQuery);
   }
 
+  canEdit(){
+    return this.user?.role === 'User' && this.user?.permission.includes('Write');
+  }
+  
   applyFilter(searchQuery: string | null) {
       this.pdfDocuments$ = this.pdfService.getPdfsFiltered(searchQuery);
   }

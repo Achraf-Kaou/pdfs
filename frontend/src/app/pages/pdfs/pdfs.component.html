@@ -1,5 +1,10 @@
-<app-nav-bar [searchQuery]="searchQuery" (searchValueChange)="onSearchValueChange($event)" ></app-nav-bar>
-<mat-tab-group animationDuration="1000ms">
+<app-nav-bar [searchQuery]="searchQuery" (searchValueChange)="onSearchValueChange($event)" ></app-nav-bar> 
+@if (canEdit()) {
+  <mat-tab-group animationDuration="1000ms">
     <mat-tab label="All pdfs"> <app-pdf-list [pdfDocuments$]="pdfDocuments$" [searchQuery]="searchQuery"></app-pdf-list></mat-tab>
     <mat-tab label="My pdfs"><app-mypdfs1></app-mypdfs1></mat-tab>
   </mat-tab-group>
+}
+@else {
+  <app-pdf-list [pdfDocuments$]="pdfDocuments$" [searchQuery]="searchQuery"></app-pdf-list>
+}

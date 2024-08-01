@@ -35,30 +35,50 @@
     </div>
   </nav>
 }@else{
-<nav class="navbar navbar-expand-lg px-5 navbar-custom">
-  <div class="container-fluid">
-    <a class="navbar-brand" href="/pdfs">PDFs</a>
-    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-      <span class="navbar-toggler-icon"></span>
-    </button>
-    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+  <nav class="navbar navbar-expand-lg px-5 navbar-custom">
+    <div class="container-fluid">
+      <a class="navbar-brand" href="/pdfs">PDFs</a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarSupportedContent">
         <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-        <li class="nav-item dropdown" *ngIf="user.role==='Admin'">
-            <a class="nav-link dropdown-toggle" href="/admin" [ngClass]="{ 'active': isActive('/admin') }" data-bs-toggle="dropdown" aria-expanded="false">Users</a>
-            <ul class="dropdown-menu">
-              <li><a class="dropdown-item" (click)="openModalAdd()">add user</a></li>
-              <li><hr class="dropdown-divider"></li>
-              <li><a class="dropdown-item" href="/admin">user list</a></li>
-            </ul>
-          </li>
-          <li class="nav-item dropdown" *ngIf="user.role==='User' && user.permission.includes('Write')">
-            <a class="nav-link dropdown-toggle" href="/pdfs" [ngClass]="{ 'active': isActive('/pdfs') }" data-bs-toggle="dropdown" aria-expanded="false">Pdfs</a>
-            <ul class="dropdown-menu">
-              <li><a class="dropdown-item" (click)="openUploadModel()">Upload pdf</a></li>
-              <li><hr class="dropdown-divider"></li>
-              <li><a class="dropdown-item" href="/pdfs">Pdf Files</a></li>
-            </ul>
-          </li>
+          <!-- Admin Navigation -->
+          <ng-container *ngIf="user.role === 'Admin'">
+            <li class="nav-item dropdown" [ngClass]="{ 'show-on-hover': true }" (click)="navigateToUsers()">
+              <a class="nav-link dropdown-toggle" href="/admin" [ngClass]="{ 'active': isActive('/admin') }" data-bs-toggle="dropdown" aria-expanded="false">
+                Users
+              </a>
+              <ul class="dropdown-menu">
+                <li><a class="dropdown-item" (click)="openModalAdd()">Add User</a></li>
+                <li><hr class="dropdown-divider"></li>
+                <li><a class="dropdown-item" href="/admin">User List</a></li>
+              </ul>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="/pdfs" [ngClass]="{ 'active': isActive('/pdfs') }">
+                PDFs
+              </a>
+            </li>
+          </ng-container>
+  
+          <!-- User Navigation -->
+          <ng-container *ngIf="user.role === 'User'">
+            <li class="nav-item dropdown" [ngClass]="{ 'show-on-hover': true }">
+              <a class="nav-link dropdown-toggle" href="/pdfs" [ngClass]="{ 'active': isActive('/pdfs') }" data-bs-toggle="dropdown" aria-expanded="false">
+                PDFs
+              </a>
+              <ul class="dropdown-menu">
+                <li><a class="dropdown-item" (click)="openUploadModel()">Upload PDF</a></li>
+                <li><hr class="dropdown-divider"></li>
+                <li><a class="dropdown-item" href="/pdfs">View PDFs</a></li>
+              </ul>
+            </li>
+          </ng-container>
+  
+          <!-- Guest Navigation -->
+          <ng-container *ngIf="user.role === 'Guest'">
+          </ng-container>
         </ul>
         <form class="d-flex" role="search" >
           <input class="form-control me-2" type="search" placeholder="Search a PDF" aria-label="Search" [formControl]="searchControl" (input)="onInputChange()" matInput #input>
@@ -72,7 +92,7 @@
                 <i class="fas fa-user fa-lg me-2"></i>
                 <div>
                   <div class="fw-bold my-2">{{ user.firstName }} {{ user.lastName }}</div>
-                  <div class="text-muted my-2">{{ user.email }}</div>
+                  <div class="text-muted my-2">{{ user.email }}</div>  
                 </div>
               </div>
               <mat-divider></mat-divider>
