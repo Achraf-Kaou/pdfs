@@ -19,9 +19,13 @@
                   <fa-icon [icon]="faFilePdf"></fa-icon>
                   <span class="ms-2">{{ row.titre }}</span>
                   <span class="ms-auto me-2 d-flex align-items-center">
-                    <button mat-icon-button color="primary" (click)="navigateTo(row.id, getLatestVersion(row).id, $event)">
+                    <button mat-icon-button color="primary" [matMenuTriggerFor]="aboveMenu" (click)="eventAnuul($event)">
                       <mat-icon>edit</mat-icon>
                     </button>
+                    <mat-menu #aboveMenu="matMenu" yPosition="above">
+                  <button mat-menu-item (click)="navigateTo(row.id, getLatestVersion(row).id, $event)"> <mat-icon><fa-icon [icon]="faFilePdf"></fa-icon></mat-icon> Edit context </button>
+                      <button mat-menu-item (click)="openEditModel(row, $event)">Edit attributs <mat-icon>settings</mat-icon></button>
+                    </mat-menu>
                     <button mat-icon-button color="warn" (click)="openDeleteModel(row, $event)">
                       <mat-icon>delete</mat-icon>
                     </button>
@@ -79,3 +83,4 @@
 
 <app-pdf-upload></app-pdf-upload>
 <app-pdf-delete></app-pdf-delete>
+<app-pdf-edit></app-pdf-edit>

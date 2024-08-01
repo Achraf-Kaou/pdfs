@@ -58,7 +58,7 @@ export class PdfDeleteComponent {
       (response: any) => {
         console.log(response !== undefined);
         if (response !== undefined) {
-          modal.close('Save click');
+            modal.close('Save click');
             localStorage.setItem('PDFDeleted', 'true');
             window.location.reload();
         }

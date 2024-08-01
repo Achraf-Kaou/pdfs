@@ -39,6 +39,13 @@ export class PdfService {
     return this.http.request(req);
   }
 
+  editPdf(formData: FormData, id: string |undefined): Observable<any> {
+    const req = new HttpRequest('put', this.uploadUrl+`/update/${id}` , formData, {
+      reportProgress: true,
+    });
+    return this.http.request(req);
+  }
+
   deletePdf(id: Object | undefined): Observable<any> {
     return this.http.delete(`${this.uploadUrl}/${id}`, {
       headers: new HttpHeaders({

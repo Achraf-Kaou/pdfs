@@ -51,6 +51,20 @@ public class PdfService {
         return pdfRepository.findById(id).orElse(null);
     }
 
+    public Optional<Pdf> updatePdf(String pdfId, String title, String description) throws IOException {
+        Optional<Pdf> optionalPdf = pdfRepository.findById(pdfId);
+        if (optionalPdf.isPresent()) {
+            Pdf pdf = optionalPdf.get();
+            pdf.setTitre(title);
+            pdf.setDescription(description);
+
+            pdfRepository.save(pdf);
+
+            return Optional.of(pdf);
+        }
+        return Optional.empty();
+    }
+
     public Optional<Pdf> updatePdfDocument(String pdfId, MultipartFile file, Date date, User user) throws IOException {
         Optional<Pdf> optionalPdf = pdfRepository.findById(pdfId);
 

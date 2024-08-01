@@ -18,10 +18,11 @@ import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { faFilePdf, faPlus } from '@fortawesome/free-solid-svg-icons';
 import { PdfDocument } from '../../../models/PdfDocument';
 import { MatButtonModule } from '@angular/material/button';
+import { PdfEditComponent } from '../pdf-edit/pdf-edit.component';
 @Component({
   selector: 'app-mypdfs1',
   standalone: true,
-  imports: [NgbDropdownModule, CommonModule, PdfUploadComponent, PdfDeleteComponent, MatPaginatorModule, MatTableModule, MatSortModule, FontAwesomeModule, MatMenuModule, MatIconModule, NgbTooltipModule, MatExpansionModule, MatButtonModule],
+  imports: [NgbDropdownModule, CommonModule, PdfUploadComponent, PdfDeleteComponent, MatPaginatorModule, MatTableModule, MatSortModule, FontAwesomeModule, MatMenuModule, MatIconModule, NgbTooltipModule, MatExpansionModule, MatButtonModule, PdfEditComponent],
   templateUrl: './mypdfs.component.html',
   styleUrl: './mypdfs.component.css'
 })
@@ -32,6 +33,8 @@ export class MypdfsComponent implements OnInit {
 
   @ViewChild(PdfUploadComponent) pdfUploadComponent!: PdfUploadComponent;
   @ViewChild(PdfDeleteComponent) pdfDeleteComponent!: PdfDeleteComponent;
+  @ViewChild(PdfEditComponent) pdfEditComponent!: PdfEditComponent;
+
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild(MatSort) sort!: MatSort;
   
@@ -92,6 +95,14 @@ export class MypdfsComponent implements OnInit {
     this.pdfDeleteComponent.open(pdf);
   }
 
+  openEditModel(pdf : Pdf, event?: MouseEvent){
+    if(event){
+      event.stopPropagation();
+    }
+    this.selectedPdf = pdf;
+    this.pdfEditComponent.open(pdf);
+  }
+
   transform(size: number): string {
     if (size === 0) {
       return '0 Bytes';
@@ -105,6 +116,12 @@ export class MypdfsComponent implements OnInit {
     return pdf.versions.reduce((latest, current) => 
       new Date(latest.date) > new Date(current.date) ? latest : current
     );
+  }
+
+  eventAnuul(event: MouseEvent) {
+    if(event){
+      event.stopPropagation();
+    }
   }
 }
 

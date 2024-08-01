@@ -14,6 +14,8 @@ import java.io.IOException;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
+import org.springframework.web.bind.annotation.PostMapping;
+
 
 @RestController
 @RequestMapping("/api/pdf")
@@ -64,25 +66,40 @@ public class PdfController {
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
-    @PutMapping("/{id}")
-public ResponseEntity<Pdf> updatePdf(
-        @PathVariable String id,
-        @RequestParam("file") MultipartFile file,
-        @RequestParam("user") String userId) {
-    try {
-        Optional<User> userOptional = userRepository.findById(userId);
-        if (userOptional.isPresent()) {
-            User user = userOptional.get();
-            Optional<Pdf> updatedPdf = pdfService.updatePdfDocument(id, file, new Date(), user);
-            return updatedPdf.map(ResponseEntity::ok)
-                    .orElseGet(() -> ResponseEntity.notFound().build());
-        } else {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build(); // User not found
+    @PutMapping("update/{id}")
+    public ResponseEntity<Pdf> update(
+        @PathVariable String id, 
+        @RequestParam String titre, 
+        @RequestParam String description) {
+        try {
+            Optional<Pdf> pdfOptional = pdfService.updatePdf(id, titre, description);
+            return pdfOptional.map(ResponseEntity::ok)
+                   .orElseGet(() -> ResponseEntity.notFound().build());
+        }catch (IOException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
-    } catch (IOException e) {
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
     }
-}
+    
+
+    @PutMapping("/{id}")
+    public ResponseEntity<Pdf> updatePdf(
+            @PathVariable String id,
+            @RequestParam("file") MultipartFile file,
+            @RequestParam("user") String userId) {
+        try {
+            Optional<User> userOptional = userRepository.findById(userId);
+            if (userOptional.isPresent()) {
+                User user = userOptional.get();
+                Optional<Pdf> updatedPdf = pdfService.updatePdfDocument(id, file, new Date(), user);
+                return updatedPdf.map(ResponseEntity::ok)
+                        .orElseGet(() -> ResponseEntity.notFound().build());
+            } else {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).build(); // User not found
+            }
+        } catch (IOException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
 
 
     @GetMapping("/filtered")

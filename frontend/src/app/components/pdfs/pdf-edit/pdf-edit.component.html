@@ -1,0 +1,44 @@
+<ng-template #content let-modal>
+    <div class="modal-header">
+      <h4 class="modal-title" id="modal-basic-title">edit file</h4>
+      <button type="button" class="btn-close" aria-label="Close" (click)="modal.dismiss('Cross click')"></button>
+    </div>
+    <div class="modal-body">
+      <form [formGroup]="editForm" (ngSubmit)="onFormSubmit(modal)">
+        <div class="form-group my-2">
+          <label for="titre">Title:</label>
+          <input type="text" class="form-control" id="titre" formControlName="titre" value="pdf.titre"/>
+          <div *ngIf="editForm.get('titre')?.touched && editForm.get('titre')?.invalid" class="text-danger">
+            Title is required
+          </div>
+        </div>
+        <div class="form-group my-2">
+          <label for="description">Description:</label>
+          <textarea class="form-control" id="description" formControlName="description" value="pdf.description"></textarea>
+        </div>
+        <hr>
+        <div class="text-end">
+          <button type="submit" class="btn btn-secondary btn-block ">confirm</button>
+        </div>
+      </form>
+    </div>
+  </ng-template>
+  
+  @if (successMessage) {
+    <div class="container fixed-top mt-2">
+      <div class="row justify-content-center">
+        <div class="col-md-6">
+             <ngb-alert #selfClosingAlert class=" text-center" type="success" (closed)="successMessage = ''">{{ successMessage }}</ngb-alert>
+        </div>
+      </div>
+    </div>
+  }
+  @if (errorMessage) {
+   <div class="container fixed-top mt-2">
+     <div class="row justify-content-center">
+       <div class="col-md-6">
+            <ngb-alert #selfClosingAlert class=" text-center" type="danger" (closed)="errorMessage = ''">{{ errorMessage }}</ngb-alert>
+       </div>
+     </div>
+   </div>
+  }
