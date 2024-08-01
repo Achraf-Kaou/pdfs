@@ -1,12 +1,11 @@
 import { Component, Input, OnChanges, OnDestroy, OnInit, SimpleChanges, ViewChild } from '@angular/core';
 import { NgxExtendedPdfViewerModule, NgxExtendedPdfViewerService } from 'ngx-extended-pdf-viewer';
-import { DomSanitizer } from '@angular/platform-browser';
 import { PDFDocument } from 'pdf-lib';
 import { PdfService } from '../../../services/Pdf.service';
 import { User } from '../../../models/User';
-import { BehaviorSubject, debounceTime, Subject, tap } from 'rxjs';
+import { BehaviorSubject, debounceTime, tap } from 'rxjs';
 import { NgbAlert, NgbAlertModule } from '@ng-bootstrap/ng-bootstrap';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+
 
 @Component({
   selector: 'app-pdf-view',
@@ -61,6 +60,7 @@ export class PdfViewComponent implements OnInit, OnDestroy {
 
   savePdf() {
     this.ngxService.getCurrentDocumentAsBlob().then((blob: Blob | undefined) => {
+      console.log(blob);
       if (blob) {
         const formData = new FormData();
         formData.append('file', blob);

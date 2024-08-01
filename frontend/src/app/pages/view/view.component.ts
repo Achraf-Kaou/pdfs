@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { PdfService } from '../../services/Pdf.service';
-import { PdfDocument } from '../../models/Pdf';
+import { Pdf } from '../../models/Pdf';
 import { NavBarComponent } from "../../components/nav-bar/nav-bar.component";
 import { PdfViewerComponent } from "../../components/pdfs/pdf-viewer/pdf-viewer.component";
 
@@ -13,7 +13,7 @@ import { PdfViewerComponent } from "../../components/pdfs/pdf-viewer/pdf-viewer.
   styleUrl: './view.component.css'
 })
 export class ViewComponent implements OnInit {
-  pdf!: PdfDocument;
+  pdf!: Pdf;
   pdfSrc!: Uint8Array;
   pdfViewer: any;
 

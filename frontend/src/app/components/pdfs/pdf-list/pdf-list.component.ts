@@ -1,6 +1,6 @@
 import { AfterViewInit, Component, Input, OnChanges, OnInit, SimpleChanges, ViewChild } from '@angular/core';
 import { NgbDropdownModule } from '@ng-bootstrap/ng-bootstrap';
-import { PdfDocument } from '../../../models/Pdf';
+import { Pdf } from '../../../models/Pdf';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { PdfUploadComponent } from "../pdf-upload/pdf-upload.component";
@@ -11,9 +11,13 @@ import { MatTableDataSource, MatTableModule  } from '@angular/material/table';
 import { MatSort, MatSortModule  } from '@angular/material/sort';
 import { Observable } from 'rxjs';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
-import { faFilePdf,faEye } from '@fortawesome/free-solid-svg-icons';
+import { faFilePdf,faEye, faPlus } from '@fortawesome/free-solid-svg-icons';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatIconModule } from '@angular/material/icon';
+import { NgbTooltipModule } from '@ng-bootstrap/ng-bootstrap';
+import { PdfDocument } from '../../../models/PdfDocument';
+
+
 
 
 @Component({
@@ -21,36 +25,37 @@ import { MatIconModule } from '@angular/material/icon';
     standalone: true,
     templateUrl: './pdf-list.component.html',
     styleUrl: './pdf-list.component.css',
-    imports: [NgbDropdownModule, CommonModule, PdfUploadComponent, PdfDeleteComponent, MatPaginatorModule, MatTableModule, MatSortModule, FontAwesomeModule, MatMenuModule, MatIconModule]
+    imports: [NgbDropdownModule, CommonModule, PdfUploadComponent, PdfDeleteComponent, MatPaginatorModule, MatTableModule, MatSortModule, FontAwesomeModule, MatMenuModule, MatIconModule, NgbTooltipModule]
 })
 export class PdfListComponent implements OnInit, AfterViewInit, OnChanges{
 
   @ViewChild(PdfUploadComponent) pdfUploadComponent!: PdfUploadComponent;
   @ViewChild(PdfDeleteComponent) pdfDeleteComponent!: PdfDeleteComponent;
-  @Input() pdfDocuments$!: Observable<PdfDocument[]>;
+  @Input() pdfDocuments$!: Observable<Pdf[]>;
   @Input() searchQuery: string = '';
-  selectedPdf: PdfDocument | null = null;
+  selectedPdf: Pdf | null = null;
   role: String | null = null;
   userId: object | undefined;
   permissions : Array<string> | null = null;
   user : User | null = null;
-  dataSource = new MatTableDataSource<PdfDocument>;
+  dataSource = new MatTableDataSource<Pdf>;
   displayedColumns: string[] = ['name', 'date', 'size', 'user', 'actions'];
 
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild(MatSort) sort!: MatSort;
   faFilePdf = faFilePdf;
   faEye = faEye;
+  faPlus=faPlus
   constructor(private router: Router){}
 
   ngOnInit(): void {
     this.pdfDocuments$.subscribe(data => {
+      console.log(data)
       this.dataSource = new MatTableDataSource(data);
       this.dataSource.paginator = this.paginator;
       this.dataSource.sort = this.sort;
       
     });
-    console.log(this.dataSource.data)
     const userData = localStorage.getItem('user');
       if (userData !== null) {
         const user: User = JSON.parse(userData);
@@ -98,13 +103,14 @@ export class PdfListComponent implements OnInit, AfterViewInit, OnChanges{
     return this.user?.role === 'User' && this.user?.permission.includes('Delete');
   }
   
-  isOwner(pdf: PdfDocument) : boolean | null {
-    const user: User = pdf.userHistory[0];
+  isOwner(pdf: Pdf) : boolean | null {
+    const user: User = pdf.versions[0].user;
     return user.id===this.user?.id;
   }
 
-  navigateTo(id: string | undefined): void {
-    this.router.navigate(['/pdf', id]);
+  navigateTo(id: string | undefined, version: string|undefined): void {
+    console.log(id)
+    this.router.navigate(['/pdf', id, version]);
   }
 
   navigateToPdf(id: string | undefined) {
@@ -123,7 +129,7 @@ export class PdfListComponent implements OnInit, AfterViewInit, OnChanges{
     this.pdfUploadComponent.open();
   }
 
-  openDeleteModel(pdf : PdfDocument){
+  openDeleteModel(pdf : Pdf){
     this.selectedPdf = pdf;
     this.pdfDeleteComponent.open(pdf);
   }
@@ -137,4 +143,16 @@ export class PdfListComponent implements OnInit, AfterViewInit, OnChanges{
     const i = Math.floor(Math.log(size) / Math.log(k));
     return parseFloat((size / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
   }
+
+  getLastDateHistory(dateHistory: Date[]) {
+    return dateHistory[dateHistory.length - 1];
+  }
+
+  getLatestVersion(pdf: Pdf): PdfDocument{
+    return pdf.versions.reduce((latest, current) => 
+      new Date(latest.date) > new Date(current.date) ? latest : current
+    );
+  }
+  
+  
 }

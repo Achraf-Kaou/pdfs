@@ -1,11 +1,8 @@
-import { User } from "./User";
+import { PdfDocument } from "./PdfDocument";
 
-export interface PdfDocument {
+export interface Pdf {
     id?: string;
     titre: string;
     description: string;
-    dateHistory: Date[];
-    userHistory: User[];
-    size: number;
-    data: Uint8Array;
+    versions: PdfDocument[];
 }

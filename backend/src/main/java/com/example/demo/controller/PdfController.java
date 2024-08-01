@@ -1,35 +1,34 @@
 package com.example.demo.controller;
 
+import com.example.demo.entity.Pdf;
 import com.example.demo.entity.PdfDocument;
 import com.example.demo.entity.User;
 import com.example.demo.repository.UserRepository;
 import com.example.demo.service.PdfService;
-
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+
 import java.io.IOException;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
-
 @RestController
 @RequestMapping("/api/pdf")
 public class PdfController {
-    
+
     private final PdfService pdfService;
     private final UserRepository userRepository;
 
-    public PdfController(UserRepository userRepository, PdfService pdfService ) {
+    public PdfController(UserRepository userRepository, PdfService pdfService) {
         this.userRepository = userRepository;
         this.pdfService = pdfService;
-       /*  this.jwtService = jwtService; */
     }
 
     @PostMapping("/upload")
-    public ResponseEntity<PdfDocument> uploadPdf(
+    public ResponseEntity<Pdf> uploadPdf(
             @RequestParam("file") MultipartFile file,
             @RequestParam("description") String description,
             @RequestParam("user") String userId,
@@ -38,25 +37,25 @@ public class PdfController {
             Optional<User> userOptional = userRepository.findById(userId);
             if (userOptional.isPresent()) {
                 User user = userOptional.get();
-                PdfDocument savedPdf = pdfService.savePdf(titre, file, description, new Date(), user);
+                Pdf savedPdf = pdfService.savePdf(titre, file, description, new Date(), user);
                 return ResponseEntity.ok(savedPdf);
             } else {
-                return ResponseEntity.status(404).body(null); // User not found
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).build(); // User not found
             }
         } catch (IOException e) {
-            return ResponseEntity.status(500).build();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
 
     @GetMapping
-    public List<PdfDocument> getAllPdfs() {
+    public List<Pdf> getAllPdfs() {
         return pdfService.findAll();
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<PdfDocument> getPdfById(@PathVariable String id) {
-        PdfDocument pdf = pdfService.getPdfById(id);
-        return ResponseEntity.ok(pdf);
+    public ResponseEntity<Pdf> getPdfById(@PathVariable String id) {
+        Pdf pdf = pdfService.getPdfById(id);
+        return pdf != null ? ResponseEntity.ok(pdf) : ResponseEntity.notFound().build();
     }
 
     @DeleteMapping("/{id}")
@@ -66,33 +65,44 @@ public class PdfController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<PdfDocument> updatePDF(
-        @PathVariable String id, 
+public ResponseEntity<Pdf> updatePdf(
+        @PathVariable String id,
         @RequestParam("file") MultipartFile file,
-        @RequestParam("user") String userId
-        ) {
-        try {
-            Optional<User> userOptional = userRepository.findById(userId);
-            if (userOptional.isPresent()) {
-                User user = userOptional.get();
-                Optional<PdfDocument> updatedDocument = pdfService.updatePdfDocument(id, file, new Date(), user);
-                return updatedDocument.map(ResponseEntity::ok)
+        @RequestParam("user") String userId) {
+    try {
+        Optional<User> userOptional = userRepository.findById(userId);
+        if (userOptional.isPresent()) {
+            User user = userOptional.get();
+            Optional<Pdf> updatedPdf = pdfService.updatePdfDocument(id, file, new Date(), user);
+            return updatedPdf.map(ResponseEntity::ok)
                     .orElseGet(() -> ResponseEntity.notFound().build());
-                } else {
-                    return ResponseEntity.status(404).body(null); // User not found
-                }
-        } catch (IOException e) {
-            return ResponseEntity.status(500).build();
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build(); // User not found
         }
+    } catch (IOException e) {
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
     }
+}
+
 
     @GetMapping("/filtered")
-    public List<PdfDocument> getPdfsFiltered(@RequestParam String titre) {
+    public List<Pdf> getPdfsFiltered(@RequestParam String titre) {
         return pdfService.getPdfsFiltered(titre);
     }
 
     @GetMapping("/pdfs/byUser")
-    public List<PdfDocument> getPdfsByUserId(@RequestParam String userId) {
+    public List<Pdf> getPdfsByUserId(@RequestParam String userId) {
         return pdfService.getPdfsByUserId(userId);
+    }
+
+    @GetMapping("/{pdfId}/{pdfDocId}")
+    public ResponseEntity<PdfDocument> getPdfDocByPdfId(
+            @PathVariable String pdfId, 
+            @PathVariable String pdfDocId) {
+
+        Optional<PdfDocument> pdfDocument = pdfService.getPdfDocByPdfId(pdfId, pdfDocId);
+
+        return pdfDocument.map(ResponseEntity::ok)
+                          .orElseGet(() -> ResponseEntity.notFound().build());
     }
 }

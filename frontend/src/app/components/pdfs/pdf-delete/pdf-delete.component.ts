@@ -1,6 +1,6 @@
 import { Component, TemplateRef, ViewChild } from '@angular/core';
 import { NgbAlert, NgbModal } from '@ng-bootstrap/ng-bootstrap';
-import { PdfDocument } from '../../../models/Pdf';
+import { Pdf } from '../../../models/Pdf';
 import { PdfService } from '../../../services/Pdf.service';
 import { BehaviorSubject, Subject, debounceTime, tap } from 'rxjs';
 
@@ -14,7 +14,7 @@ import { BehaviorSubject, Subject, debounceTime, tap } from 'rxjs';
 export class PdfDeleteComponent {
 
   @ViewChild('content') content!: TemplateRef<any>;
-  pdf!: PdfDocument;
+  pdf!: Pdf;
   private _successMessage$ = new BehaviorSubject<string>('');
   private _errorMessage$ = new BehaviorSubject<string>('');
   successMessage: string | null = null;
@@ -46,7 +46,7 @@ export class PdfDeleteComponent {
     }
   }
 
-  open(pdf : PdfDocument){
+  open(pdf : Pdf){
     this.modalService.open(this.content, { ariaLabelledBy: 'modal-basic-title' });
     console.log(pdf);
     this.pdf = pdf;

@@ -6,12 +6,17 @@ import { debounceTime, distinctUntilChanged } from 'rxjs';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { AddUserComponent } from "../users/add-user/add-user.component";
 import { PdfUploadComponent } from "../pdfs/pdf-upload/pdf-upload.component";
-
+import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+import { faUser,faRightFromBracket } from '@fortawesome/free-solid-svg-icons';
+import { MatIcon } from '@angular/material/icon';
+import { MatMenuModule } from '@angular/material/menu';
+import { MatIconModule } from '@angular/material/icon';
+import { MatDividerModule } from '@angular/material/divider';
 
 @Component({
   selector: 'app-nav-bar',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, AddUserComponent, PdfUploadComponent],
+  imports: [CommonModule, ReactiveFormsModule, AddUserComponent, PdfUploadComponent,FontAwesomeModule,MatIcon,MatMenuModule,MatIconModule,MatDividerModule],
   templateUrl: './nav-bar.component.html',
   styleUrl: './nav-bar.component.css',
 })
@@ -24,6 +29,8 @@ export class NavBarComponent implements OnInit, OnChanges {
   @ViewChild(PdfUploadComponent) pdfUploadComponent!: PdfUploadComponent;
   @Output() saveEvent = new EventEmitter<void>();
   user!: User;
+  faUser = faUser;
+  faRightFromBracket = faRightFromBracket;
 
   constructor(private router: Router, private route: ActivatedRoute) {}
 
@@ -65,9 +72,8 @@ export class NavBarComponent implements OnInit, OnChanges {
     const value = this.searchControl.value || '';
     localStorage.setItem('searchQuery', value);
     this.searchValueChange.emit(value);
-    if (this.router.url !== '/home') {
-      // Navigate to home page with search query as a parameter
-      this.router.navigate(['/home'], { queryParams: { search: value } });
+    if (this.router.url !== '/pdfs') {
+      this.router.navigate(['/pdfs'], { queryParams: { search: value } });
     }
   }
 

@@ -3,7 +3,7 @@ import { PdfViewComponent } from "../../components/pdfs/pdf-view/pdf-view.compon
 import { NavBarComponent } from "../../components/nav-bar/nav-bar.component";
 import { PdfService } from '../../services/Pdf.service';
 import { ActivatedRoute } from '@angular/router';
-import { PdfDocument } from '../../models/Pdf';
+import { Pdf } from '../../models/Pdf';
 
 
 @Component({
@@ -14,7 +14,7 @@ import { PdfDocument } from '../../models/Pdf';
     imports: [NavBarComponent, PdfViewComponent]
 })
 export class PdfComponent implements OnInit {
-  pdf!: PdfDocument;
+  pdf!: Pdf;
   pdfSrc!: Uint8Array;
   pdfViewer: any;
   id!: string | null;
@@ -24,22 +24,20 @@ export class PdfComponent implements OnInit {
 
   ngOnInit(): void {
     const id = this.route.snapshot.paramMap.get('id');
+    const version = this.route.snapshot.paramMap.get('version');
     this.id = id;
-    this.getPdfById(id);
+    this.getPdfById(id, version);
   }
 
-  getPdfById(id: string | null): void {
-    this.pdfService.getPdfById(id).subscribe(
+  getPdfById(id: string | null, version: string|null): void {
+    this.pdfService.getPdfDocByPdfId(id, version).subscribe(
       (pdf: any) => {
-        if (pdf.data && pdf.data.length > 0) {
+        console.log(pdf)
           this.pdf = pdf;
           const base64PDF = pdf.data;
           const byteNumbers = Array.from(atob(base64PDF));
           this.pdfSrc = new Uint8Array(byteNumbers.map((byte) => byte.charCodeAt(0)));
           console.log(this.pdfSrc)
-        } else {
-          console.error('Invalid or empty PDF data');
-        }
       },
       (error: any) => {
         console.error('Error fetching PDF:', error);

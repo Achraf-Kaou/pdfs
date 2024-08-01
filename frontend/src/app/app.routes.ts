@@ -5,10 +5,9 @@ import { UnauthorizedComponent } from './pages/unauthorized/unauthorized.compone
 import { AdminComponent } from './pages/admin/admin.component';
 import { PdfUploadComponent } from './components/pdfs/pdf-upload/pdf-upload.component';
 import { PdfListComponent } from './components/pdfs/pdf-list/pdf-list.component';
-import { HomeComponent } from './pages/home/home.component';
 import { PdfComponent } from './pages/pdf/pdf.component';
-import { MypdfsPage } from './pages/mypdfs/mypdfs.component';
 import { ViewComponent } from './pages/view/view.component';
+import { PdfsComponent } from './pages/pdfs/pdfs.component';
 
 export const routes: Routes = [
     { path: '', component: LoginComponent },
@@ -17,11 +16,11 @@ export const routes: Routes = [
     { path: 'admin', component: AdminComponent },
     { path: 'pdfUpload', component: PdfUploadComponent },
     { path: 'pdfList', component: PdfListComponent },
-    { path: 'home', component: HomeComponent },
-    { path: 'home/search/:search', component: HomeComponent },
-    { path: 'pdf/:id', component: PdfComponent },
-    { path: 'mypfds', component: MypdfsPage },
+    { path: 'pdf/:id/:version', component: PdfComponent },
     { path: 'view/:id', component: ViewComponent },
+    { path: 'pdfs', component: PdfsComponent },
+    { path: 'pdfs/search/:search', component: PdfsComponent },
+
     
 /*     { path: '**', redirectTo: '/unauthorized' },
  */    

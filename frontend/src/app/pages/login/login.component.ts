@@ -71,7 +71,7 @@ export class LoginComponent {
           this.router.navigateByUrl('/admin');  
         }else {
           localStorage.setItem('user', JSON.stringify(response));
-          this.router.navigateByUrl('/home');  
+          this.router.navigateByUrl('/pdfs');  
         }
       },
       (error: any) => {

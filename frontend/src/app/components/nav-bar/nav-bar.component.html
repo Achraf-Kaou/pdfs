@@ -2,7 +2,7 @@
 @if (pdfPageUrl){
   <nav class="navbar navbar-expand-lg px-5 navbar-custom">
     <div class="container-fluid">
-      <a class="navbar-brand" href="/home">PDFs</a>
+      <a class="navbar-brand" href="/pdfs">PDFs</a>
       <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
       </button>
@@ -12,7 +12,24 @@
           <input class="form-control me-2" type="search" placeholder="Search a PDF" aria-label="Search" [formControl]="searchControl" (input)="onInputChange()">
           <button class="btn btn-outline-success me-2" type="button" (click)="onSearch()">Search</button>
           <button class="btn btn-outline-primary ms-4" type="button" (click)="onSave()">save</button>
-          <button class="btn btn-outline-dark ms-3" type="button" (click)="logout()">logout</button>
+          <button mat-icon-button type="button" [matMenuTriggerFor]="menu" style="border: none; outline: none;background: none;">
+            <mat-icon>person</mat-icon>
+          </button>
+          <mat-menu #menu="matMenu">
+            <div class="">
+              <div class="d-flex align-items-center  text-center">
+                <i class="fas fa-user fa-lg me-2"></i>
+                <div>
+                  <div class="fw-bold my-2">{{ user.firstName }} {{ user.lastName }}</div>
+                  <div class="text-muted my-2">{{ user.email }}</div>
+                </div>
+              </div>
+              <mat-divider></mat-divider>
+              <button mat-menu-item class="btn btn-link text-decoration-none w-100 text-center">
+                Logout <fa-icon [icon]="faRightFromBracket"></fa-icon>
+              </button>
+            </div>
+          </mat-menu>   
         </form>
     </div>
     </div>
@@ -20,7 +37,7 @@
 }@else{
 <nav class="navbar navbar-expand-lg px-5 navbar-custom">
   <div class="container-fluid">
-    <a class="navbar-brand" href="/home">PDFs</a>
+    <a class="navbar-brand" href="/pdfs">PDFs</a>
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
       <span class="navbar-toggler-icon"></span>
     </button>
@@ -35,19 +52,35 @@
             </ul>
           </li>
           <li class="nav-item dropdown" *ngIf="user.role==='User' && user.permission.includes('Write')">
-            <a class="nav-link dropdown-toggle" href="/home" [ngClass]="{ 'active': isActive('/home') }" data-bs-toggle="dropdown" aria-expanded="false">Pdfs</a>
+            <a class="nav-link dropdown-toggle" href="/pdfs" [ngClass]="{ 'active': isActive('/pdfs') }" data-bs-toggle="dropdown" aria-expanded="false">Pdfs</a>
             <ul class="dropdown-menu">
               <li><a class="dropdown-item" (click)="openUploadModel()">Upload pdf</a></li>
               <li><hr class="dropdown-divider"></li>
-              <li><a class="dropdown-item" href="/home">All Files</a></li>
-              <li><a class="dropdown-item" href="/mypfds">My Files</a></li>
+              <li><a class="dropdown-item" href="/pdfs">Pdf Files</a></li>
             </ul>
           </li>
         </ul>
         <form class="d-flex" role="search" >
           <input class="form-control me-2" type="search" placeholder="Search a PDF" aria-label="Search" [formControl]="searchControl" (input)="onInputChange()" matInput #input>
           <button class="btn btn-outline-success me-2" type="button" (click)="onSearch()">Search</button>
-          <button class="btn btn-outline-dark ms-5" type="button" (click)="logout()">logout</button>
+          <button mat-icon-button type="button" [matMenuTriggerFor]="menu" style="border: none; outline: none;background: none;">
+            <mat-icon>person</mat-icon>
+          </button>
+          <mat-menu #menu="matMenu">
+            <div class="">
+              <div class="d-flex align-items-center  text-center">
+                <i class="fas fa-user fa-lg me-2"></i>
+                <div>
+                  <div class="fw-bold my-2">{{ user.firstName }} {{ user.lastName }}</div>
+                  <div class="text-muted my-2">{{ user.email }}</div>
+                </div>
+              </div>
+              <mat-divider></mat-divider>
+              <button mat-menu-item class="btn btn-link text-decoration-none w-100 text-center" (click)="logout()">
+                Logout <fa-icon [icon]="faRightFromBracket"></fa-icon>
+              </button>
+            </div>
+          </mat-menu>          
         </form>
     </div>
     </div>

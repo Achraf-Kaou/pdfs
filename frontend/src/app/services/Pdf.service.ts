@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpEventType, HttpHeaders, HttpRequest } from '@angular/common/http';
+import { HttpClient, HttpHeaders, HttpRequest } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { map } from 'rxjs/operators';
-import { PdfDocument } from '../models/Pdf';
+import { Pdf } from '../models/Pdf';
+import { PdfDocument } from '../models/PdfDocument';
 
 @Injectable({
   providedIn: 'root'
@@ -20,12 +20,16 @@ export class PdfService {
     });
     return this.http.request(req);
   }
-  getPdfs(): Observable<PdfDocument[]> {
-    return this.http.get<PdfDocument[]>(this.uploadUrl);
+  getPdfs(): Observable<Pdf[]> {
+    return this.http.get<Pdf[]>(this.uploadUrl);
   }
 
-  getPdfById(id: string | null): Observable<PdfDocument> {
-    return this.http.get<PdfDocument>(`${this.uploadUrl}/${id}`);
+  getPdfById(id: string | null): Observable<Pdf> {
+    return this.http.get<Pdf>(`${this.uploadUrl}/${id}`);
+  }
+
+  getPdfDocByPdfId(pdfId : string | null, pdfDocId : string | null): Observable<PdfDocument> {
+    return this.http.get<PdfDocument>(`${this.uploadUrl}/${pdfId}/${pdfDocId}`);
   }
 
   updatePdf(formData: FormData, id: string | null): Observable<any> {
@@ -43,14 +47,16 @@ export class PdfService {
     })
   }
 
-  getPdfsFiltered(filterValue: string| null): Observable<PdfDocument[]> {
+  getPdfsFiltered(filterValue: string| null): Observable<Pdf[]> {
     if (filterValue === null){
       return this.getPdfs();
     }
-    return this.http.get<PdfDocument[]>(`${this.uploadUrl}/filtered?titre=${filterValue}`);
+    return this.http.get<Pdf[]>(`${this.uploadUrl}/filtered?titre=${filterValue}`);
   }
 
-  getPdfsByUserId(userId: string): Observable<PdfDocument[]> {
-    return this.http.get<PdfDocument[]>(`${this.uploadUrl}/pdfs/byUser?userId=${userId}`);
+  getPdfsByUserId(userId: string): Observable<Pdf[]> {
+    return this.http.get<Pdf[]>(`${this.uploadUrl}/pdfs/byUser?userId=${userId}`);
   }
+
+  
 }
