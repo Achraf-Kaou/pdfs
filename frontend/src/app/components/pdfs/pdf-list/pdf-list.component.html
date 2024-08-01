@@ -5,7 +5,7 @@
         <div class="card-body">
           <div class="d-flex flex-wrap">
             <h5 class="font-size-16 me-3">Files</h5>
-            <div class="ms-auto" *ngIf="canDelete() || canEdit()">
+            <div class="ms-auto" *ngIf="role === 'User'">
               <button class="btn btn-primary" type="button" (click)="openUploadModel()">
                 <fa-icon [icon]="faPlus" class="me-3"></fa-icon>Create New
               </button>
@@ -48,24 +48,29 @@
               <ng-container matColumnDef="actions">
                 <th mat-header-cell *matHeaderCellDef></th>
                 <td mat-cell *matCellDef="let row">
-                  <ng-container *ngIf="canDelete()">
-                    <button mat-icon-button [matMenuTriggerFor]="menu" style="border: none; outline: none;background: none;">
-                      <mat-icon>more_vert</mat-icon>
-                    </button>
-                    <mat-menu #menu="matMenu">
-                      <button mat-menu-item (click)="navigateTo(row.id, getLatestVersion(row).id)"><mat-icon>edit</mat-icon>Edit</button>
-                      <div class="dropdown-divider"></div>
-                      <button mat-menu-item (click)="openDeleteModel(row)"><mat-icon>delete</mat-icon>Delete</button>
-                    </mat-menu>
-                  </ng-container>
-                  <!-- Check if user can edit -->
-                  <ng-container *ngIf="canEdit() && !canDelete()">
-                    <button type="button" class="btn btn-outline-secondary btn-sm" (click)="navigateTo(row.id, getLatestVersion(row).id)">Edit</button>
-                  </ng-container>
-                  <!-- Check if user can view only -->
-                  <ng-container *ngIf="canReadOnly()">
-                    <button type="button" class="btn btn-outline-secondary btn-sm" (click)="navigateToPdf(row.id)">View</button>
-                  </ng-container>
+                  <!-- Admin can edit and delete -->
+                   @if (role === 'User' && canDelete()) {
+                    <ng-container>
+                      <button mat-icon-button [matMenuTriggerFor]="menu" style="border: none; outline: none;background: none;">
+                        <mat-icon>more_vert</mat-icon>
+                      </button>
+                      <mat-menu #menu="matMenu">
+                        <button mat-menu-item (click)="navigateTo(row.id, getLatestVersion(row).id)"><mat-icon>edit</mat-icon>Edit</button>
+                        <div class="dropdown-divider"></div>
+                        <button mat-menu-item (click)="openDeleteModel(row)"><mat-icon>delete</mat-icon>Delete</button>
+                      </mat-menu>
+                    </ng-container>
+                  <!-- User can edit -->
+                   }@else if (role === 'User' && canEdit()) {
+                    <ng-container>
+                      <button mat-icon-button color="primary" (click)="navigateTo(row.id, getLatestVersion(row).id)"><mat-icon>edit</mat-icon></button>
+                    </ng-container>
+                  <!-- Guest can view only -->
+                   }@else {
+                    <ng-container *ngIf="role === 'Guest' || 'Admin'">
+                      <button type="button" class="btn btn-outline-secondary btn-sm" (click)="navigateToPdf(row.id)">View</button>
+                    </ng-container>
+                  }
                 </td>
               </ng-container>
               <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>

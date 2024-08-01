@@ -16,6 +16,7 @@ import { MatMenuModule } from '@angular/material/menu';
 import { MatIconModule } from '@angular/material/icon';
 import { NgbTooltipModule } from '@ng-bootstrap/ng-bootstrap';
 import { PdfDocument } from '../../../models/PdfDocument';
+import { MatButtonModule } from '@angular/material/button';
 
 
 
@@ -25,7 +26,7 @@ import { PdfDocument } from '../../../models/PdfDocument';
     standalone: true,
     templateUrl: './pdf-list.component.html',
     styleUrl: './pdf-list.component.css',
-    imports: [NgbDropdownModule, CommonModule, PdfUploadComponent, PdfDeleteComponent, MatPaginatorModule, MatTableModule, MatSortModule, FontAwesomeModule, MatMenuModule, MatIconModule, NgbTooltipModule]
+    imports: [NgbDropdownModule, CommonModule, PdfUploadComponent, PdfDeleteComponent, MatPaginatorModule, MatTableModule, MatSortModule, FontAwesomeModule, MatMenuModule, MatIconModule, NgbTooltipModule, MatButtonModule]
 })
 export class PdfListComponent implements OnInit, AfterViewInit, OnChanges{
 
@@ -59,7 +60,7 @@ export class PdfListComponent implements OnInit, AfterViewInit, OnChanges{
     const userData = localStorage.getItem('user');
       if (userData !== null) {
         const user: User = JSON.parse(userData);
-        if (user && user.role) {
+        if (user) {
           this.role = user.role;
           this.userId = user.id;
           this.permissions = user.permission;
