@@ -60,7 +60,6 @@ export class PdfViewComponent implements OnInit, OnDestroy {
 
   savePdf() {
     this.ngxService.getCurrentDocumentAsBlob().then((blob: Blob | undefined) => {
-      console.log(blob);
       if (blob) {
         const formData = new FormData();
         formData.append('file', blob);

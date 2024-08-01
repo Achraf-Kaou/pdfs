@@ -4,6 +4,7 @@ import { PdfService } from '../../services/Pdf.service';
 import { Pdf } from '../../models/Pdf';
 import { NavBarComponent } from "../../components/nav-bar/nav-bar.component";
 import { PdfViewerComponent } from "../../components/pdfs/pdf-viewer/pdf-viewer.component";
+import { PdfDocument } from '../../models/PdfDocument';
 
 @Component({
   selector: 'app-view',
@@ -13,7 +14,7 @@ import { PdfViewerComponent } from "../../components/pdfs/pdf-viewer/pdf-viewer.
   styleUrl: './view.component.css'
 })
 export class ViewComponent implements OnInit {
-  pdf!: Pdf;
+  pdf!: PdfDocument;
   pdfSrc!: Uint8Array;
   pdfViewer: any;
 
@@ -27,14 +28,12 @@ export class ViewComponent implements OnInit {
   getPdfById(id: string | null): void {
     this.pdfService.getPdfById(id).subscribe(
       (pdf: any) => {
-        if (pdf.data && pdf.data.length > 0) {
-          this.pdf = pdf;
-          const base64PDF = pdf.data;
-          const byteNumbers = Array.from(atob(base64PDF));
+          this.pdf = this.getLatestVersion(pdf);
+          const pdfDoc =  this.getLatestVersion(pdf);
+          const base64PDF = pdfDoc.data;
+          const base64String = Array.prototype.join.call(base64PDF, '');
+          const byteNumbers = Array.from(atob(base64String));
           this.pdfSrc = new Uint8Array(byteNumbers.map((byte) => byte.charCodeAt(0)));
-        } else {
-          console.error('Invalid or empty PDF data');
-        }
       },
       (error: any) => {
         console.error('Error fetching PDF:', error);
@@ -42,4 +41,9 @@ export class ViewComponent implements OnInit {
     );
   }
 
+  getLatestVersion(pdf: Pdf): PdfDocument{
+    return pdf.versions.reduce((latest, current) => 
+      new Date(latest.date) > new Date(current.date) ? latest : current
+    );
+  }
 }

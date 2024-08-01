@@ -27,6 +27,7 @@
     "@ng-bootstrap/ng-bootstrap": "^17.0.0",
     "@popperjs/core": "^2.11.8",
     "bootstrap": "^5.3.3",
+    "my-angular-app": "file:",
     "ngx-extended-pdf-viewer": "^21.0.0-alpha.9",
     "pdf-lib": "^1.17.1",
     "rxjs": "~7.8.0",
