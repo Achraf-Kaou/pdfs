@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { MatTabsModule } from '@angular/material/tabs';
 import { NavBarComponent } from "../../components/nav-bar/nav-bar.component";
-import { MypdfsComponent } from "../../components/pdfs/mypdfs/mypdfs.component";
+import { MypdfsListComponent } from "../../components/pdfs/mypdfs-list/mypdfs-list.component";
 import { PdfListComponent } from "../../components/pdfs/pdf-list/pdf-list.component";
 import { ActivatedRoute } from '@angular/router';
 import { Observable } from 'rxjs';
@@ -10,13 +10,13 @@ import { PdfService } from '../../services/Pdf.service';
 import { User } from '../../models/User';
 
 @Component({
-  selector: 'app-pdfs',
+  selector: 'app-home',
   standalone: true,
-  imports: [MatTabsModule, NavBarComponent, MypdfsComponent, PdfListComponent],
-  templateUrl: './pdfs.component.html',
-  styleUrl: './pdfs.component.css'
+  imports: [MypdfsListComponent, MatTabsModule, NavBarComponent, PdfListComponent],
+  templateUrl: './home.component.html',
+  styleUrl: './home.component.css'
 })
-export class PdfsComponent {
+export class HomeComponent {
   pdfDocuments$!: Observable<Pdf[]>;
   searchQuery: string = '';
   user!: User;

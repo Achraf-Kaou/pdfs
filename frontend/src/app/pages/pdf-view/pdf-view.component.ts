@@ -7,13 +7,13 @@ import { PdfViewerComponent } from "../../components/pdfs/pdf-viewer/pdf-viewer.
 import { PdfDocument } from '../../models/PdfDocument';
 
 @Component({
-  selector: 'app-view',
+  selector: 'app-pdf-view',
   standalone: true,
   imports: [NavBarComponent, PdfViewerComponent],
-  templateUrl: './view.component.html',
-  styleUrl: './view.component.css'
+  templateUrl: './pdf-view.component.html',
+  styleUrl: './pdf-view.component.css'
 })
-export class ViewComponent implements OnInit {
+export class PdfViewComponent implements OnInit {
   pdf!: PdfDocument;
   pdfSrc!: Uint8Array;
   pdfViewer: any;
@@ -47,3 +47,4 @@ export class ViewComponent implements OnInit {
     );
   }
 }
+

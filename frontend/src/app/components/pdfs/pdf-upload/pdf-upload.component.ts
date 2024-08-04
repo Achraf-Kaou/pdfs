@@ -1,6 +1,6 @@
 import { Component, OnInit, ViewChild, TemplateRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormBuilder, FormControl, FormGroup, FormsModule, Validators } from '@angular/forms';
+import { FormBuilder, FormGroup, FormsModule, Validators } from '@angular/forms';
 import { ReactiveFormsModule } from '@angular/forms';
 import { PdfService } from '../../../services/Pdf.service';
 import { BehaviorSubject, debounceTime } from 'rxjs';
@@ -30,12 +30,13 @@ export class PdfUploadComponent implements OnInit {
   progress = 0;
 
   constructor(private pdfService: PdfService, private modalService: NgbModal, private fb: FormBuilder) {
+    // init the form
     this.uploadForm = this.fb.group({
       titre: ['', [Validators.required]],
       description: [''],
       pdf: [null, [Validators.required, fileTypeValidator(['pdf'])]]
     });
-
+    //prepare the alert messages 
     this._successMessage$
       .pipe(debounceTime(5000))
       .subscribe(() => (this.successMessage = null));
@@ -57,13 +58,13 @@ export class PdfUploadComponent implements OnInit {
     this.modalService.open(this.content, { ariaLabelledBy: 'modal-basic-title' });
   }
 
+  //insurig that the file is a pdf file and not any other file
   isValidPdf(file: File): Promise<boolean> {
     return new Promise((resolve, reject) => {
       if (file.type !== 'application/pdf') {
         resolve(false);
         return;
       }
-
       const reader = new FileReader();
       reader.onload = (event) => {
         const arrayBuffer = event.target?.result as ArrayBuffer;
@@ -99,13 +100,16 @@ export class PdfUploadComponent implements OnInit {
     }
   }
 
+  //submitting the upload
   onFormSubmit() {
+    // testing if there is any errors
     this.uploadForm.markAllAsTouched();
     if (this.uploadForm.invalid) {
       return;
     }
     this.progress = 0;
 
+    // preparing the form data and sending it to the server
     const formData: FormData = new FormData();
     formData.append('titre', this.uploadForm.get('titre')?.value);
     formData.append('file', this.selectedFile as Blob, this.selectedFile?.name || '');

@@ -1,24 +1,23 @@
-import { Component, Input, OnInit, ViewChild } from '@angular/core';
-import { PdfViewComponent } from "../../components/pdfs/pdf-view/pdf-view.component";
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { NavBarComponent } from "../../components/nav-bar/nav-bar.component";
+import { PdfEditContentComponent } from "../../components/pdfs/pdf-edit-content/pdf-edit-content.component";
 import { PdfService } from '../../services/Pdf.service';
 import { ActivatedRoute } from '@angular/router';
 import { Pdf } from '../../models/Pdf';
 
-
 @Component({
-    selector: 'app-pdf',
-    standalone: true,
-    templateUrl: './pdf.component.html',
-    styleUrl: './pdf.component.css',
-    imports: [NavBarComponent, PdfViewComponent]
+  selector: 'app-pdf-content',
+  standalone: true,
+  imports: [PdfEditContentComponent, NavBarComponent],
+  templateUrl: './pdf-content.component.html',
+  styleUrl: './pdf-content.component.css'
 })
-export class PdfComponent implements OnInit {
+export class PdfContentComponent implements OnInit {
   pdf!: Pdf;
   pdfSrc!: Uint8Array;
   pdfViewer: any;
   id!: string | null;
-  @ViewChild(PdfViewComponent) pdfView!: PdfViewComponent;
+  @ViewChild(PdfEditContentComponent) pdfView!: PdfEditContentComponent;
 
   constructor(private pdfService: PdfService, private route: ActivatedRoute ) {}
 
@@ -48,5 +47,4 @@ export class PdfComponent implements OnInit {
   onSave() {
     this.pdfView.savePdf();
   }
-
 }

@@ -8,6 +8,7 @@
       <div class="form-group my-2">
         <label for="titre">Title:</label>
         <input type="text" class="form-control" id="titre" formControlName="titre" />
+        <!-- message d'erreur -->
         <div *ngIf="uploadForm.get('titre')?.touched && uploadForm.get('titre')?.invalid" class="text-danger">
           Title is required
         </div>

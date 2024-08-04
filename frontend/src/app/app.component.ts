@@ -1,7 +1,5 @@
 import { Component } from '@angular/core';
-import { Router, RouterOutlet } from '@angular/router';
-import { UserService } from './services/user.service';
-import { User } from './models/User';
+import { RouterOutlet } from '@angular/router';
 
 @Component({
   selector: 'app-root',
@@ -10,10 +8,5 @@ import { User } from './models/User';
   templateUrl: './app.component.html',
 })
 export class AppComponent {
-  title = 'my-app';
-  user!: User;
-  
-  constructor(private router: Router, private userService: UserService) {}
-
-  ngOnInit(): void {}
+  title = 'PDFs';
 }

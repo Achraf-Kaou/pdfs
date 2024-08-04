@@ -5,7 +5,6 @@ import { NgxExtendedPdfViewerModule } from 'ngx-extended-pdf-viewer';
   selector: 'app-pdf-viewer',
   standalone: true,
   imports: [NgxExtendedPdfViewerModule],
-  /* schemas: [CUSTOM_ELEMENTS_SCHEMA, NO_ERRORS_SCHEMA], */
   templateUrl: './pdf-viewer.component.html',
   styleUrl: './pdf-viewer.component.css'
 })
@@ -15,5 +14,4 @@ export class PdfViewerComponent {
   onAfterLoadComplete(pdf: any) {
     pdf.annotationToolbar.setToolbarVisible(false);
   }
-
 }

@@ -18,9 +18,6 @@ import { NgbTooltipModule } from '@ng-bootstrap/ng-bootstrap';
 import { PdfDocument } from '../../../models/PdfDocument';
 import { MatButtonModule } from '@angular/material/button';
 
-
-
-
 @Component({
     selector: 'app-pdf-list',
     standalone: true,
@@ -67,7 +64,6 @@ export class PdfListComponent implements OnInit, AfterViewInit, OnChanges{
           this.user = user;
         }
       }
-    
   }
 
   ngOnChanges(changes: SimpleChanges): void {
@@ -104,11 +100,6 @@ export class PdfListComponent implements OnInit, AfterViewInit, OnChanges{
     return this.user?.role === 'User' && this.user?.permission.includes('Delete');
   }
   
-  isOwner(pdf: Pdf) : boolean | null {
-    const user: User = pdf.versions[0].user;
-    return user.id===this.user?.id;
-  }
-
   navigateTo(id: string | undefined, version: string|undefined): void {
     console.log(id)
     this.router.navigate(['/pdf', id, version]);
@@ -154,6 +145,4 @@ export class PdfListComponent implements OnInit, AfterViewInit, OnChanges{
       new Date(latest.date) > new Date(current.date) ? latest : current
     );
   }
-  
-  
 }

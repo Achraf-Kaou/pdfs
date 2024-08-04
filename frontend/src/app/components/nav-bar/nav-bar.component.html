@@ -1,5 +1,5 @@
 
-@if (pdfPageUrl){
+@if (pdfPageUrl){ <!-- if pdfcontent page --> 
   <nav class="navbar navbar-expand-lg px-5 navbar-custom">
     <div class="container-fluid">
       <a class="navbar-brand" href="/pdfs">PDFs</a>
@@ -7,11 +7,13 @@
         <span class="navbar-toggler-icon"></span>
       </button>
       <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <!-- only search and save button and the user details -->
         <ul class="navbar-nav me-auto mb-2 mb-lg-0"></ul>
         <form class="d-flex" role="search">
           <input class="form-control me-2" type="search" placeholder="Search a PDF" aria-label="Search" [formControl]="searchControl" (input)="onInputChange()">
           <button class="btn btn-outline-success me-2" type="button" (click)="onSearch()">Search</button>
           <button class="btn btn-outline-primary ms-4" type="button" (click)="onSave()">save</button>
+          <!-- user details -->
           <button mat-icon-button type="button" [matMenuTriggerFor]="menu" style="border: none; outline: none;background: none;">
             <mat-icon>person</mat-icon>
           </button>
@@ -80,6 +82,7 @@
           <ng-container *ngIf="user.role === 'Guest'">
           </ng-container>
         </ul>
+        <!-- search and user details -->
         <form class="d-flex" role="search" >
           <input class="form-control me-2" type="search" placeholder="Search a PDF" aria-label="Search" [formControl]="searchControl" (input)="onInputChange()" matInput #input>
           <button class="btn btn-outline-success me-2" type="button" (click)="onSearch()">Search</button>
@@ -107,5 +110,6 @@
   </nav>
 }
 
+<!-- pop up-->
 <add-user></add-user>
 <app-pdf-upload></app-pdf-upload> 

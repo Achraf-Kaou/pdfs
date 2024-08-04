@@ -1,25 +1,17 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
-import { UserListComponent } from "../../components/users/user-list/user-list.component";
+import { Component } from '@angular/core';
 import { AddUserComponent } from "../../components/users/add-user/add-user.component";
 import { EditUserComponent } from "../../components/users/edit-user/edit-user.component";
 import { DeleteUserComponent } from "../../components/users/delete-user/delete-user.component";
-import { UserService } from '../../services/user.service';
-import { Observable, debounceTime, distinctUntilChanged, of, startWith, switchMap } from 'rxjs';
-import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { User } from '../../models/User';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { NavBarComponent } from "../../components/nav-bar/nav-bar.component";
+import { ListUserComponent } from "../../components/users/list-user/list-user.component";
 
 @Component({
     selector: 'app-admin',
     standalone: true,
     templateUrl: './admin.component.html',
-    imports: [UserListComponent, AddUserComponent, EditUserComponent, DeleteUserComponent, FormsModule, ReactiveFormsModule, NavBarComponent]
+    imports: [AddUserComponent, EditUserComponent, DeleteUserComponent, FormsModule, ReactiveFormsModule, NavBarComponent, ListUserComponent]
 })
 export class AdminComponent {
 
-
-
-  constructor() { }
-
-  
 }

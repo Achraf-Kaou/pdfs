@@ -6,15 +6,14 @@ import { User } from '../../../models/User';
 import { BehaviorSubject, debounceTime, tap } from 'rxjs';
 import { NgbAlert, NgbAlertModule } from '@ng-bootstrap/ng-bootstrap';
 
-
 @Component({
-  selector: 'app-pdf-view',
+  selector: 'app-pdf-edit-content',
   standalone: true,
   imports: [NgxExtendedPdfViewerModule, NgbAlertModule],
-  templateUrl: './pdf-view.component.html',
-  styleUrl: './pdf-view.component.css'
+  templateUrl: './pdf-edit-content.component.html',
+  styleUrl: './pdf-edit-content.component.css'
 })
-export class PdfViewComponent implements OnInit, OnDestroy {
+export class PdfEditContentComponent implements OnInit, OnDestroy {
   @Input() pdfSrc!: Uint8Array;
   pdfDoc!: PDFDocument;
   idUser!: string;

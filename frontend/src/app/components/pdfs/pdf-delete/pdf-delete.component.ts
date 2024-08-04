@@ -2,7 +2,7 @@ import { Component, TemplateRef, ViewChild } from '@angular/core';
 import { NgbAlert, NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { Pdf } from '../../../models/Pdf';
 import { PdfService } from '../../../services/Pdf.service';
-import { BehaviorSubject, Subject, debounceTime, tap } from 'rxjs';
+import { BehaviorSubject, debounceTime, tap } from 'rxjs';
 
 @Component({
   selector: 'app-pdf-delete',
@@ -14,30 +14,32 @@ import { BehaviorSubject, Subject, debounceTime, tap } from 'rxjs';
 export class PdfDeleteComponent {
 
   @ViewChild('content') content!: TemplateRef<any>;
-  pdf!: Pdf;
+  @ViewChild('selfClosingAlert', { static: false }) selfClosingAlert: NgbAlert | undefined;
   private _successMessage$ = new BehaviorSubject<string>('');
   private _errorMessage$ = new BehaviorSubject<string>('');
   successMessage: string | null = null;
   errorMessage: string | null = null;
-  @ViewChild('selfClosingAlert', { static: false }) selfClosingAlert: NgbAlert | undefined;
+  pdf!: Pdf;
 
   constructor(private modalService: NgbModal, private pdfService: PdfService){
+    // init for the alerts
     this._successMessage$
       .pipe(
         tap((message) => (this.successMessage = message)),
-        debounceTime(5000)
+        debounceTime(3000)
       )
       .subscribe(() => (this.successMessage = null));
 
     this._errorMessage$
       .pipe(
         tap((message) => (this.errorMessage = message)),
-        debounceTime(5000)
+        debounceTime(3000)
       )
       .subscribe(() => (this.errorMessage = null));
   }
 
   ngOnInit() {
+    // Check if a PDF was deleted from the local storage and display a success message if so.
     if (typeof localStorage !== 'undefined') {
       if (localStorage.getItem('PDFDeleted') === 'true') {
         this._successMessage$.next(`PDF deleted successfully.`);
@@ -46,9 +48,9 @@ export class PdfDeleteComponent {
     }
   }
 
+  //open the delete pdf modal
   open(pdf : Pdf){
     this.modalService.open(this.content, { ariaLabelledBy: 'modal-basic-title' });
-    console.log(pdf);
     this.pdf = pdf;
   }
 
@@ -57,14 +59,14 @@ export class PdfDeleteComponent {
     .subscribe(
       (response: any) => {
         console.log(response !== undefined);
-        if (response !== undefined) {
+        if (response !== undefined) { // passing the success to the local storage
             modal.close('Save click');
             localStorage.setItem('PDFDeleted', 'true');
             window.location.reload();
         }
       },
       (error: any) => {
-        console.error(error);
+        //displaying the error alert
         if (error.status === 400) {
           this._errorMessage$.next(`Bad request: ${error.error}`);
         } else if (error.status === 500) {
@@ -76,5 +78,4 @@ export class PdfDeleteComponent {
       }
     );
   }
-
 }

@@ -4,7 +4,6 @@ import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } 
 import { NgbAlert, NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { BehaviorSubject, debounceTime } from 'rxjs';
 import { PdfService } from '../../../services/Pdf.service';
-import { HttpEventType } from '@angular/common/http';
 import { Pdf } from '../../../models/Pdf';
 
 @Component({
